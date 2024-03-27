@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 
 export default function Monaco({ ...props }) {
   const monaco = useMonaco()
+
   useEffect(() => {
     if (monaco) {
       import('monaco-themes/themes/Blackboard.json').then((data) => {
@@ -14,5 +15,5 @@ export default function Monaco({ ...props }) {
     }
   }, [monaco])
 
-  return <Editor {...props} />
+  return <Editor theme="Blackboard" {...props} />
 }

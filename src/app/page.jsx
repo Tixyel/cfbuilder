@@ -10,33 +10,83 @@ import Monaco from '@/components/editor/monaco'
 
 import { cn } from '@/lib/utils'
 import SortableList from '@/components/sortable/SortableList'
-import { useState } from 'react'
+import { useEffect, useMemo, useReducer, useState } from 'react'
 import SortableItem from '@/components/sortable/SortableItem'
 
 export default function Home() {
-  let json = {
-    '[teste 1]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 2]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 3]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 4]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 5]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 6]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-    '[teste 7]': { type: 'text', label: '', value: '', group: '[Group 2]' },
-    '[teste 8]': { type: 'text', label: '', value: '', group: '[Group 2]' },
-    '[teste 9]': { type: 'text', label: '', value: '', group: '[Group 3]' },
+  const [json, setJson] = useState({
+      '[field 1]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 2]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 3]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 4]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 5]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 6]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 7]': { type: 'text', label: '', value: '', group: '[Group 2]' },
+      '[field 8]': { type: 'text', label: '', value: '', group: '[Group 2]' },
+      '[field 9]': { type: 'text', label: '', value: '', group: '[Group 3]' },
+    }),
+    [groups, setGroups] = useState(
+      Object.values(json).reduce((acc, value) => {
+        let object = { id: value.group, name: value.group }
+        !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+
+        return acc
+      }, []),
+    ),
+    [fields, setFields] = useState([]),
+    [group, selectGroup] = useState({})
+
+  useEffect(() => {
+    setGroups(
+      Object.values(json).reduce((acc, value) => {
+        let object = { id: value.group, name: value.group }
+        !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+
+        return acc
+      }, []),
+    )
+  }, [json])
+
+  useEffect(() => {
+    setFields(
+      Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
+        acc = [...acc, { id: key, key, type, label, value, group }]
+
+        return acc
+      }, []),
+    )
+  }, [json])
+
+  function updateJson(e) {
+    let newJson = Object.values(e || fields).reduce((acc, { id, key, type, label, value, options, group }) => {
+      acc[key] = {
+        type,
+        label,
+        value,
+        options,
+        group: group,
+      }
+
+      return acc
+    }, {})
+
+    setJson(newJson)
   }
 
-  const [fields, setFields] = useState(
-      new Array(10).fill('').map((_, index) => ({ id: index + 1, key: `[teste ${index + 1}]`, type: '', label: '', value: '' })),
-    ),
-    [groups, setGroups] = useState(new Array(3).fill('').map((_, index) => ({ id: index + 1, name: `[Group ${index + 1}]` })))
+  function handleInnerClick(e) {
+    e.stopPropagation()
+    if (e.detail == 2) {
+      let thisGroup = groups.find(({ name }) => name == e.target.value)
+      if (thisGroup) selectGroup(thisGroup)
+    }
+  }
 
   return (
-    <main className="min-h-screen h-screen max-h-screen bg-slate-950 flex flex-row justify-between gap-6 items-start px-24 py-20 overflow-hidden">
-      <Section className="h-full">
+    <main className="flex-1 bg-slate-950 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden">
+      <Section className="h-full flex-[0.5]">
         <Section.title>
           <p className="text-zinc-50 text-sm">Add group</p>
-          <div className="grid place-items-center size-10">
+          <div className="grid place-items-center size-10 cursor-pointer">
             <Plus color="#ffffff" size="20px" />
           </div>
         </Section.title>
@@ -52,7 +102,7 @@ export default function Home() {
 
               return (
                 <SortableItem id={id} className="my-3 first:mt-0 last:mb-0">
-                  <Group key={name} name={name} className={id == 1 ? 'active' : ''} />
+                  <Group onClick={handleInnerClick} key={name} name={name} className={group.id == id ? 'active' : ''} />
                 </SortableItem>
               )
             }}
@@ -60,11 +110,11 @@ export default function Home() {
         </ScrollArea>
       </Section>
 
-      <Section className="h-full">
+      <Section className="h-full flex-[0.5]">
         <Section.title>
-          <p className="text-zinc-50 text-base font-bold flex-1">[GROUP]</p>
+          <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
           <p className="text-zinc-50 text-sm">Add field</p>
-          <div className="grid place-items-center size-10">
+          <div className="grid place-items-center size-10  cursor-pointer">
             <Plus color="#ffffff" size="20px" />
           </div>
         </Section.title>
@@ -73,14 +123,38 @@ export default function Home() {
 
         <ScrollArea className="w-full px-3">
           <SortableList
-            items={fields}
-            onChange={setFields}
-            renderItem={(item) => {
+            items={fields.map((item) => {
               let { id, key, type, label, value } = item
 
+              return { id, key, type, label, value, group: item.group, visible: item.group == group.id }
+            })}
+            onChange={(e) => {
+              setFields(e)
+              updateJson(e)
+            }}
+            renderItem={(item) => {
+              let { id, key, type, label, value, visible = true } = item
+
               return (
-                <SortableItem id={id} className="my-3 first:mt-0 last:mb-0">
-                  <Field index={id} Key={key} type={type} label={label} value={value} className={cn(id == 1 ? 'active' : '')}></Field>
+                <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0', visible ? '' : 'hidden transition-none')}>
+                  <Field
+                    onChange={(e, index) => {
+                      let field = index,
+                        name = e.target.id,
+                        value = e.target.value
+
+                      let newFields = fields
+
+                      newFields[fields.findIndex(({ id }) => id == field)][name] = value
+
+                      setFields(newFields)
+                      updateJson(fields)
+                    }}
+                    index={id}
+                    Key={key}
+                    type={type}
+                    label={label}
+                    value={value}></Field>
                 </SortableItem>
               )
             }}
@@ -90,11 +164,12 @@ export default function Home() {
 
       <Section className={'flex-1 h-full rounded-xl overflow-hidden pr-0'}>
         <Monaco
+          onChange={(e) => setJson(JSON.parse(e))}
           options={{ minimap: { enabled: false }, wordWrap: 'on' }}
           width="100%"
           height="100%"
           defaultLanguage="json"
-          defaultValue={JSON.stringify(json, null, 2)}
+          value={JSON.stringify(json, null, 2)}
         />
       </Section>
     </main>

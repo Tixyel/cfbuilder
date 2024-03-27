@@ -51,12 +51,20 @@ let availableFieldTypes = [
   'video-input',
 ]
 
-function Field({ className, children, Key, type, label, value, index, ...props }) {
+function Field({ className, children, Key, type, label, value, index, onChange, ...props }) {
   return (
     <Block className={className} {...props}>
-      <Input className="px-3 ring-0 h-5 bg-black border-0 text-center" type="text" placeholder="[object name]" defaultValue={Key} />
+      <Input
+        className="px-3 ring-0 h-5 bg-black border-0 text-center"
+        type="text"
+        placeholder="[object name]"
+        value={Key}
+        onChange={(e) => onChange(e, index)}
+        id="key"
+      />
+
       <InputWithLabel label="Field type">
-        <Select defaultValue={type}>
+        <Select value={type} id="type" onValueChange={(value) => onChange({ target: { value, id: 'type' } }, index)}>
           <SelectTrigger className="w-full ">
             <SelectValue placeholder="Select field type" />
           </SelectTrigger>
@@ -71,12 +79,14 @@ function Field({ className, children, Key, type, label, value, index, ...props }
       </InputWithLabel>
 
       <InputWithLabel label="Label" htmlFor="label">
-        <Input type="text" placeholder="Field label" defaultValue={label} id="label" />
+        <Input type="text" placeholder="Field label" value={label} id="label" onChange={(e) => onChange(e, index)} />
       </InputWithLabel>
 
       <InputWithLabel label="Value" htmlFor="value">
-        <Input type="text" placeholder="Field value" defaultValue={value} id="value" />
+        <Input type="text" placeholder="Field value" value={value} id="value" onChange={(e) => onChange(e, index)} />
       </InputWithLabel>
+
+      {/* {type == 'dropdown' && <div></div>} */}
     </Block>
   )
 }

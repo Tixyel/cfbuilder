@@ -35,10 +35,22 @@ export default function SortableList({ items, onChange, renderItem }) {
       onDragCancel={() => setActive(null)}>
       <SortableContext items={items}>
         {items.map((item) => (
-          <React.Fragment key={item.id}>{renderItem(item)}</React.Fragment>
+          <React.Fragment key={item.id}>
+            {renderItem(
+              item,
+              items.findIndex((i) => i.id == item.id),
+            )}
+          </React.Fragment>
         ))}
       </SortableContext>
-      <SortableOverlay>{activeItem ? renderItem(activeItem) : null}</SortableOverlay>
+      <SortableOverlay>
+        {activeItem
+          ? renderItem(
+              activeItem,
+              items.findIndex((item) => item.id == activeItem.id),
+            )
+          : null}
+      </SortableOverlay>
     </DndContext>
   )
 }
