@@ -1,1 +1,3 @@
- 
+body {
+  background: radial-gradient(at center -20%, #271235, #392a6200 70%);
+}
