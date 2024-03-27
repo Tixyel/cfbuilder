@@ -81,12 +81,17 @@ export default function Home() {
     }
   }
 
+  function addGroup() {}
+  function addField() {
+    console.log('abacate')
+  }
+
   return (
-    <main className="flex-1 bg-slate-950 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden">
+    <main className="flex-1 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden z-20">
       <Section className="h-full flex-[0.5]">
         <Section.title>
           <p className="text-zinc-50 text-sm">Add group</p>
-          <div className="grid place-items-center size-10 cursor-pointer">
+          <div className="grid place-items-center size-10 cursor-pointer" onClick={addGroup}>
             <Plus color="#ffffff" size="20px" />
           </div>
         </Section.title>
@@ -96,7 +101,23 @@ export default function Home() {
         <ScrollArea className="w-full px-3">
           <SortableList
             items={groups}
-            onChange={setGroups}
+            onChange={(e) => {
+              setGroups(e)
+              updateJson(
+                Object.values(e).reduce((acc, { id, name }) => {
+                  let object = fields
+                    .filter(({ group }) => group == id)
+                    .map((item) => {
+                      item.group = name
+                      return item
+                    })
+
+                  acc = [...acc, ...object]
+                  return acc
+                }, []),
+                true,
+              )
+            }}
             renderItem={(item) => {
               let { id, name } = item
 
@@ -114,7 +135,7 @@ export default function Home() {
         <Section.title>
           <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
           <p className="text-zinc-50 text-sm">Add field</p>
-          <div className="grid place-items-center size-10  cursor-pointer">
+          <div className="grid place-items-center size-10  cursor-pointer" onClick={addField}>
             <Plus color="#ffffff" size="20px" />
           </div>
         </Section.title>
@@ -162,15 +183,20 @@ export default function Home() {
         </ScrollArea>
       </Section>
 
-      <Section className={'flex-1 h-full rounded-xl overflow-hidden pr-0'}>
-        <Monaco
-          onChange={(e) => setJson(JSON.parse(e))}
-          options={{ minimap: { enabled: false }, wordWrap: 'on' }}
-          width="100%"
-          height="100%"
-          defaultLanguage="json"
-          value={JSON.stringify(json, null, 2)}
-        />
+      <Section className={'flex-1 h-full rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
+        <Section.title>
+          <p className="text-zinc-50 text-base font-bold flex-1 ml-5">Result</p>
+        </Section.title>
+        <div className="h-full w-full rounded-xl overflow-hidden">
+          <Monaco
+            onChange={(e) => setJson(JSON.parse(e))}
+            options={{ minimap: { enabled: false }, wordWrap: 'on' }}
+            width="100%"
+            height="100%"
+            defaultLanguage="json"
+            value={JSON.stringify(json, null, 2)}
+          />
+        </div>
       </Section>
     </main>
   )

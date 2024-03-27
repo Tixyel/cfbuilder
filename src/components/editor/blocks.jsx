@@ -11,10 +11,11 @@ function Block({ className, children, ...props }) {
     <div
       className={cn(
         'flex flex-row h-min justify-center items-strech p-2 pl-0 w-full border transition ease-in-out duration-1000 [&.active]:border-[#864FBC] rounded-xl my-2 first:mt-0 last:mb-0 relative',
+        'bg-black/5 backdrop-blur-sm',
         className,
       )}
       {...props}>
-      <SortableItem.DragHandle className="grid place-items-center w-14 cursor-move touch-none hover:bg-slate-400/20 rounded-xl mx-1 transition duration-500">
+      <SortableItem.DragHandle className="grid place-items-center w-14 cursor-move touch-none hover:bg-white/20 rounded-xl mx-1 transition duration-500">
         <ChevronsUpDown color="#ffffff" size="20px" />
       </SortableItem.DragHandle>
 
@@ -53,9 +54,9 @@ let availableFieldTypes = [
 
 function Field({ className, children, Key, type, label, value, index, onChange, ...props }) {
   return (
-    <Block className={className} {...props}>
+    <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
       <Input
-        className="px-3 ring-0 h-5 bg-black border-0 text-center"
+        className="px-3 ring-0 h-5 bg-black/20 border-0 text-center"
         type="text"
         placeholder="[object name]"
         value={Key}
