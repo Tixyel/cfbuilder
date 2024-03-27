@@ -8,7 +8,6 @@ export default function Monaco({ ...props }) {
   useEffect(() => {
     if (monaco) {
       import('monaco-themes/themes/Blackboard.json').then((data) => {
-        console.log(data)
         monaco.editor.defineTheme('Blackboard', data)
         monaco.editor.setTheme('Blackboard')
       })
