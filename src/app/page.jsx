@@ -9,15 +9,16 @@ import Monaco from '@/components/editor/monaco'
 import { Button } from '@/components/ui/button'
 import Divider from '@/components/ui/divider'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import SortableList from '@/components/sortable/SortableList'
 import SortableItem from '@/components/sortable/SortableItem'
 
 export default function Home() {
-  const [json, setJson] = useState({
-      '[field 1]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-      '[field 2]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+  const noGroup = 'ungrouped',
+    [json, setJson] = useState({
+      '[field 1]': { type: 'colorpicker', label: '', value: '', group: '[Group 1]' },
+      '[field 2]': { type: 'a', label: '', value: '', group: '[Group 1]' },
       '[field 3]': { type: 'text', label: '', value: '', group: '[Group 1]' },
       '[field 4]': { type: 'text', label: '', value: '', group: '[Group 1]' },
       '[field 5]': { type: 'text', label: '', value: '', group: '[Group 1]' },
@@ -25,6 +26,8 @@ export default function Home() {
       '[field 7]': { type: 'text', label: '', value: '', group: '[Group 2]' },
       '[field 8]': { type: 'text', label: '', value: '', group: '[Group 2]' },
       '[field 9]': { type: 'text', label: '', value: '', group: '[Group 3]' },
+      '[field 10]': { type: 'text', label: '', value: '' },
+      '[field 11]': { type: 'text', label: '', value: '' },
     }),
     [groups, setGroups] = useState(
       Object.values(json).reduce((acc, value) => {
@@ -34,29 +37,19 @@ export default function Home() {
         return acc
       }, []),
     ),
-    [fields, setFields] = useState([]),
-    [group, selectGroup] = useState({})
+    [fields, setFields] = useState(
+      Object.entries(json).reduce((acc, [key, { type, label, value, group, options }]) => {
+        acc = [...acc, { id: key, key, type, label, value, options, group }]
 
-  // useEffect(() => {
-  //   setGroups(
-  //     Object.values(json).reduce((acc, value) => {
-  //       let object = { id: value.group, name: value.group }
-  //       !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+        return acc
+      }, []),
+    ),
+    [group, selectGroup] = useState(groups[0] || { id: noGroup, name: noGroup })
 
-  //       return acc
-  //     }, []),
-  //   )
-  // }, [json])
-
-  // useEffect(() => {
-  //   setFields(
-  //     Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
-  //       acc = [...acc, { id: key, key, type, label, value, group }]
-
-  //       return acc
-  //     }, []),
-  //   )
-  // }, [json])
+  useEffect(() => {
+    apply()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function updateJson(e) {
     let newJson = Object.values(e || fields).reduce((acc, { id, key, type, label, value, options, group }) => {
@@ -74,11 +67,11 @@ export default function Home() {
     setJson(newJson)
   }
 
-  function handleInnerClick(e) {
-    e.stopPropagation()
-    if (e.detail == 2) {
-      let thisGroup = groups.find(({ name }) => name == e.target.value)
-      if (thisGroup) selectGroup(thisGroup)
+  function handleInnerClick(key) {
+    if (key == noGroup) return selectGroup({ id: noGroup, name: noGroup })
+    else {
+      let thisGroup = groups.find(({ name }) => name == key)
+      if (thisGroup) return selectGroup(thisGroup)
     }
   }
 
@@ -91,13 +84,18 @@ export default function Home() {
     setGroups(
       Object.values(json).reduce((acc, value) => {
         let object = { id: value.group, name: value.group }
+
+        if (!value?.group) object = { id: noGroup, name: noGroup }
+
         !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+
         return acc
       }, []),
     )
+
     setFields(
-      Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
-        acc = [...acc, { id: key, key, type, label, value, group }]
+      Object.entries(json).reduce((acc, [key, { type, label, value, options, group }]) => {
+        acc = [...acc, { id: key, key, type, label, value, options, group }]
 
         return acc
       }, []),
@@ -118,19 +116,22 @@ export default function Home() {
 
         <ScrollArea className="w-full px-3">
           <SortableList
-            items={groups}
+            items={[...groups]}
             onChange={(e) => {
               setGroups(e)
               updateJson(
                 Object.values(e).reduce((acc, { id, name }) => {
-                  let object = fields
-                    .filter(({ group }) => group == id)
-                    .map((item) => {
-                      item.group = name
-                      return item
-                    })
+                  if (id) {
+                    let object = fields
+                      .filter(({ group }) => group == id)
+                      .map((item) => {
+                        item.group = name
+                        return item
+                      })
 
-                  acc = [...acc, ...object]
+                    acc = [...acc, ...object]
+                  }
+
                   return acc
                 }, []),
                 true,
@@ -141,7 +142,7 @@ export default function Home() {
 
               return (
                 <SortableItem id={id} className="my-3 first:mt-0 last:mb-0">
-                  <Group onClick={handleInnerClick} key={name} name={name} className={group.id == id ? 'active' : ''} />
+                  <Group select={handleInnerClick} key={name} Key={id} name={name} className={group.id == id ? 'active' : ''} />
                 </SortableItem>
               )
             }}
@@ -162,12 +163,24 @@ export default function Home() {
 
         <ScrollArea className="w-full px-3">
           <SortableList
-            items={fields.map((item) => {
-              let { id, key, type, label, value } = item
-
-              return { id, key, type, label, value, group: item.group, visible: item.group == group.id }
-            })}
+            fullItems={fields}
+            items={fields.filter((item) => item.group == group.id || (group.id == noGroup && !item.group))}
             onChange={(e) => {
+              e = Object.entries({
+                [group.id]: e,
+                ...Object.values(fields)
+                  .filter((item) => item.group != group.id || (group.id == noGroup && !item.group))
+                  .reduce((acc, value) => {
+                    !acc[value.group || noGroup] && (acc[value.group || noGroup] = [])
+
+                    acc[value.group || noGroup] = [...acc[value.group || noGroup], value]
+
+                    return acc
+                  }, {}),
+              })
+                .sort(([a], [b]) => groups.findIndex(({ id }) => id == a) - groups.findIndex(({ id }) => id == b))
+                .reduce((acc, [_, value]) => (acc = [...acc, ...value]), [])
+
               setFields(e)
               updateJson(e)
             }}
@@ -175,7 +188,7 @@ export default function Home() {
               let { id, key, type, label, value, visible = true } = item
 
               return (
-                <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0', visible ? '' : 'hidden transition-none')}>
+                <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
                   <Field
                     onChange={(e, index) => {
                       let field = index,

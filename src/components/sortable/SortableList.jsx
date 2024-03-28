@@ -9,7 +9,7 @@ function SortableOverlay({ children }) {
   return <DragOverlay dropAnimation={dropAnimationConfig}>{children}</DragOverlay>
 }
 
-export default function SortableList({ items, onChange, renderItem }) {
+export default function SortableList({ items, fullItems, onChange, renderItem }) {
   const [active, setActive] = useState(null),
     activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]),
     sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))

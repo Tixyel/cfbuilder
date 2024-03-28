@@ -1,13 +1,21 @@
-import { Input } from '@/components/ui/input'
-import { ChevronsUpDown, Plus } from 'lucide-react'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import React, { useState } from 'react'
+import { ChevronsUpDown, SquareMousePointer, Plus } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import InputWithLabel from '@/components/ui/input with label'
-import SortableItem from '../sortable/SortableItem'
-import { useState } from 'react'
 
-function Block({ className, children, ...props }) {
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import InputWithLabel from '@/components/ui/input with label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+
+import SortableItem from '../sortable/SortableItem'
+
+import { HexColorPicker, HexAlphaColorPicker } from 'react-colorful'
+import { Label } from '../ui/label'
+
+function Block({ className, childrenClassName, children, ...props }) {
   return (
     <div
       className={cn(
@@ -20,20 +28,34 @@ function Block({ className, children, ...props }) {
         <ChevronsUpDown color="#ffffff" size="20px" />
       </SortableItem.DragHandle>
 
-      <div className="flex flex-col items-start justify-start gap-3 w-full">{children}</div>
+      <div className={cn('flex flex-col items-start justify-start gap-3 w-full', childrenClassName)}>{children}</div>
     </div>
   )
 }
 
-function Group({ className, name, ...props }) {
+function Group({ className, name, Key: key, select, ...props }) {
+  const [group, setGroup] = useState(name)
+
   return (
     <Block
       className={cn(
         'flex flex-row p-2 pl-0 justify-start items-strech w-full border transition ease-in-out duration-1000 [&.active]:border-[#864FBC] rounded-xl my-2 first:mt-0 last:mb-0',
         className,
       )}
+      childrenClassName="flex-row"
       {...props}>
-      <Input type="text" placeholder="Group title" defaultValue={name} />
+      <Input
+        type="text"
+        placeholder="Group title"
+        onChange={(e) => {
+          setGroup(e.target.value)
+        }}
+        value={group}
+        disabled={name == 'ungrouped'}
+      />
+      <Button className="bg-transparent hover:bg-transparent" size={'icon'} onClick={() => select(key, name)}>
+        <SquareMousePointer size={20} color="white"></SquareMousePointer>
+      </Button>
     </Block>
   )
 }
@@ -44,6 +66,7 @@ let availableFieldTypes = [
     'button',
     'number',
     'slider',
+    'gradient',
     'dropdown',
     'checkbox',
     'googleFont',
@@ -1673,7 +1696,10 @@ let availableFieldTypes = [
   ]
 
 function Field({ className, children, Key, type, label, value, index, onChange, ...props }) {
-  const [typo, setTypo] = useState(type)
+  const [typo, setTypo] = useState(type),
+    [color, setColor] = useState(value || '#864FBC'),
+    [inputColor, setInputColor] = useState(color),
+    [alpha, setAlpha] = useState(false)
 
   const variables = {
     'googleFont': (
@@ -1691,20 +1717,87 @@ function Field({ className, children, Key, type, label, value, index, onChange, 
       </Select>
     ),
     'colorpicker': (
-      <Input
-        className="[&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch-wrapper]:p-px  "
-        type="color"
-        placeholder="Field value"
-        value={value}
-        id="value"
-        onChange={(e) => onChange(e, index)}
-      />
+      <div className="flex flex-row gap-2 w-full">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="px-2 w-full">
+              <div className="w-full h-full rounded" style={{ backgroundColor: color }}></div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-80 flex flex-row justify-between items-start gap-3">
+            {alpha ? (
+              <HexAlphaColorPicker
+                className="flex-1"
+                color={color}
+                onChange={(color) => {
+                  setColor(color)
+                  setInputColor(color)
+                }}
+              />
+            ) : (
+              <HexColorPicker
+                className="flex-1"
+                color={color}
+                onChange={(color) => {
+                  setColor(color)
+                  setInputColor(color)
+                }}
+              />
+            )}
+            <div className="flex w-[30%] flex-col h-full gap-4">
+              <InputWithLabel labelClassName="text-xs ml-1" label="Color" htmlFor="value">
+                <Input
+                  id="value"
+                  className="text-xs"
+                  value={inputColor}
+                  onChange={({ target: { value: color } }) => {
+                    new RegExp('^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$').test(color) && setColor(color)
+
+                    console.log(color)
+                    setInputColor(color)
+                  }}
+                />
+              </InputWithLabel>
+              <div className="flex flex-row justify-around items-center gap-3">
+                <Checkbox
+                  value={alpha}
+                  id="alpha"
+                  onCheckedChange={(checked) => {
+                    setAlpha(checked)
+                  }}
+                />
+                <Label>Enable alpha</Label>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <Button
+          variant="outline"
+          onClick={() => {
+            onChange({ target: { value: color, id: 'value' } }, index)
+          }}>
+          Apply
+        </Button>
+      </div>
     ),
   }
+
+  // <Input
+  //   spellCheck={false}
+  //   autoComplete="off"
+  //   className="[&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch-wrapper]:p-px  "
+  //   type="color"
+  //   placeholder="Field value"
+  //   value={value}
+  //   id="value"
+  //   onChange={(e) => onChange(e, index)}
+  // />
 
   return (
     <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
       <Input
+        spellCheck={false}
+        autoComplete="off"
         className="px-3 ring-0 h-5 bg-black/20 border-0 text-center"
         type="text"
         placeholder="[object name]"
@@ -1735,11 +1828,29 @@ function Field({ className, children, Key, type, label, value, index, onChange, 
       </InputWithLabel>
 
       <InputWithLabel label="Label" htmlFor="label">
-        <Input type="text" placeholder="Field label" value={label} id="label" onChange={(e) => onChange(e, index)} />
+        <Input
+          spellCheck={false}
+          autoComplete="off"
+          type="text"
+          placeholder="Field label"
+          value={label}
+          id="label"
+          onChange={(e) => onChange(e, index)}
+        />
       </InputWithLabel>
 
       <InputWithLabel label="Value" htmlFor="value">
-        {variables[typo] || <Input type="text" placeholder="Field value" value={value} id="value" onChange={(e) => onChange(e, index)} />}
+        {variables[typo] || (
+          <Input
+            spellCheck={false}
+            autoComplete="off"
+            type="text"
+            placeholder="Field value"
+            value={value}
+            id="value"
+            onChange={(e) => onChange(e, index)}
+          />
+        )}
       </InputWithLabel>
 
       {typo == 'dropdown' && (
