@@ -1690,6 +1690,16 @@ function Field({ className, children, Key, type, label, value, index, onChange, 
         </SelectContent>
       </Select>
     ),
+    'colorpicker': (
+      <Input
+        className="[&::-webkit-color-swatch]:border-none [&::-webkit-color-swatch]:rounded-sm [&::-webkit-color-swatch-wrapper]:p-px  "
+        type="color"
+        placeholder="Field value"
+        value={value}
+        id="value"
+        onChange={(e) => onChange(e, index)}
+      />
+    ),
   }
 
   return (

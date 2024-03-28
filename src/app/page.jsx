@@ -5,12 +5,13 @@ import { Plus } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Field, Group } from '@/components/editor/blocks'
 import Section from '@/components/editor/section'
-import Divider from '@/components/ui/divider'
 import Monaco from '@/components/editor/monaco'
+import { Button } from '@/components/ui/button'
+import Divider from '@/components/ui/divider'
 
+import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import SortableList from '@/components/sortable/SortableList'
-import { useEffect, useMemo, useReducer, useState } from 'react'
 import SortableItem from '@/components/sortable/SortableItem'
 
 export default function Home() {
@@ -36,26 +37,26 @@ export default function Home() {
     [fields, setFields] = useState([]),
     [group, selectGroup] = useState({})
 
-  useEffect(() => {
-    setGroups(
-      Object.values(json).reduce((acc, value) => {
-        let object = { id: value.group, name: value.group }
-        !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+  // useEffect(() => {
+  //   setGroups(
+  //     Object.values(json).reduce((acc, value) => {
+  //       let object = { id: value.group, name: value.group }
+  //       !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
 
-        return acc
-      }, []),
-    )
-  }, [json])
+  //       return acc
+  //     }, []),
+  //   )
+  // }, [json])
 
-  useEffect(() => {
-    setFields(
-      Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
-        acc = [...acc, { id: key, key, type, label, value, group }]
+  // useEffect(() => {
+  //   setFields(
+  //     Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
+  //       acc = [...acc, { id: key, key, type, label, value, group }]
 
-        return acc
-      }, []),
-    )
-  }, [json])
+  //       return acc
+  //     }, []),
+  //   )
+  // }, [json])
 
   function updateJson(e) {
     let newJson = Object.values(e || fields).reduce((acc, { id, key, type, label, value, options, group }) => {
@@ -84,6 +85,23 @@ export default function Home() {
   function addGroup() {}
   function addField() {
     console.log('abacate')
+  }
+
+  function apply() {
+    setGroups(
+      Object.values(json).reduce((acc, value) => {
+        let object = { id: value.group, name: value.group }
+        !acc.some(({ id }) => id == object.id) && (acc = [...acc, object])
+        return acc
+      }, []),
+    )
+    setFields(
+      Object.entries(json).reduce((acc, [key, { type, label, value, group }]) => {
+        acc = [...acc, { id: key, key, type, label, value, group }]
+
+        return acc
+      }, []),
+    )
   }
 
   return (
@@ -183,9 +201,12 @@ export default function Home() {
         </ScrollArea>
       </Section>
 
-      <Section className={'flex-1 h-full rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
+      <Section className={'flex-1 h-full gap-4   rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
         <Section.title>
-          <p className="text-zinc-50 text-base font-bold flex-1 ml-5">Result</p>
+          <p className="text-zinc-50 text-base font-bold flex-1 ml-5 w-full">Result</p>
+          <Button onClick={apply} className="hover:border-transparent transition duration-700 border-[#864FBC]" variant="outline">
+            Apply
+          </Button>
         </Section.title>
         <div className="h-full w-full rounded-xl overflow-hidden">
           <Monaco
