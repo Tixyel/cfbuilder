@@ -14,7 +14,7 @@ export default function Result({ json, setJson, onClick }) {
       ),
     )
 
-    toast('Field data copied successfully')
+    toast.success('Field data copied successfully')
   }
 
   return (
