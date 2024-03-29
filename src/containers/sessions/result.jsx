@@ -18,7 +18,10 @@ export default function Result({ json, setJson, onClick }) {
   }
 
   return (
-    <Section className={'flex-1 h-full gap-4   rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
+    <Section
+      className={
+        'flex-1 h-full min-h-min sm:min-h-[50%] sm:w-[90%] gap-4 max-h-screen rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'
+      }>
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1 ml-5 w-full">Result</p>
         <p className="text-zinc-50 ml-5 text-xs">{Object.keys(json).length} fields</p>
@@ -27,12 +30,13 @@ export default function Result({ json, setJson, onClick }) {
         </Button>
       </Section.title>
 
-      <div className="h-full w-full rounded-xl overflow-hidden">
+      <div className="flex h-full w-full rounded-xl overflow-hidden">
         <Monaco
+          className="flex-1"
           onChange={(e) => setJson(JSON.parse(e))}
           options={{ minimap: { enabled: false }, wordWrap: 'on' }}
           width="100%"
-          height="100%"
+          height="100dvh"
           defaultLanguage="json"
           value={JSON.stringify(json, null, 2)}
         />

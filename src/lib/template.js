@@ -8,7 +8,12 @@ export const templateField = {
   '[field 2]': {
     type: 'dropdown',
     label: '',
-    value: '',
+    value: 'value1',
+    options: {
+      'value1': 'Value 1',
+      'value2': 'Value 2',
+      'value3': 'Value 3',
+    },
     group: '[Group 1]',
   },
   '[field 3]': {

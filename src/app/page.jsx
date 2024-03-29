@@ -8,8 +8,9 @@ import Fields from '@/containers/sessions/fields'
 import Result from '@/containers/sessions/result'
 
 import { noGroupObj } from '@/lib/group'
-import { jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
+import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
 import { toast } from 'sonner'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function Home() {
   const [json, setJson] = useState(templateField),
@@ -32,7 +33,13 @@ export default function Home() {
   }, [])
 
   return (
-    <main className="flex-1 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden z-20">
+    <main
+      className={cn(
+        'flex-1 gap-6 pb-20 overflow-x-hidden z-20 overflow-hidden',
+        'flex justify-between flex-row items-start',
+        'sm:justify-start sm:flex-col sm:items-center sm:overflow-y-scroll',
+        'lg:justify-between lg:flex-row lg:items-start lg:overflow-hidden lg:px-24',
+      )}>
       <Groups
         groups={groups}
         setGroups={setGroups}
@@ -43,7 +50,6 @@ export default function Home() {
           setJson(updateJson(e || fields))
         }}
       />
-
       <Fields
         fields={fields}
         setFields={setFields}
@@ -55,7 +61,6 @@ export default function Home() {
           setState(!state)
         }}
       />
-
       <Result json={json} setJson={setJson} onClick={updateContent} />
     </main>
   )

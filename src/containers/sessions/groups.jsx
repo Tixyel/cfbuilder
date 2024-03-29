@@ -18,7 +18,7 @@ export default function Groups({ groups, setGroups, group, selectGroup, updateJs
   }
 
   return (
-    <Section className="h-full flex-[0.5]">
+    <Section className="h-full flex-[0.5] max-h-screen sm:w-full">
       <Section.title>
         <p className="w-full text-zinc-50 text-sm">Group list</p>
       </Section.title>

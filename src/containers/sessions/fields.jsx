@@ -25,7 +25,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
   }
 
   return (
-    <Section className="h-full flex-[0.5]">
+    <Section className="h-full flex-[0.5] max-h-screen">
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
 
@@ -34,7 +34,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
 
       <Divider />
 
-      <ScrollArea className="w-full px-3">
+      <ScrollArea className="w-full px-2">
         <SortableList
           items={fields.filter((item) => item.group?.name == group.name || (group.name == noGroup && !item.group?.name))}
           onChange={(currentFields) => {
@@ -62,7 +62,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
                   }}
                   remove={(id) => {
                     let newFields = fields,
-                      index = fields.findIndex((item) => item.id == index)
+                      index = fields.findIndex((item) => item.id == id)
 
                     if (index != undefined) {
                       newFields.splice(index, 1)
