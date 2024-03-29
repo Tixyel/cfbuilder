@@ -7,7 +7,7 @@ import Groups from '@/containers/sessions/groups'
 import Fields from '@/containers/sessions/fields'
 import Result from '@/containers/sessions/result'
 
-import { noGroup, noGroupObj } from '@/lib/group'
+import { noGroupObj } from '@/lib/group'
 import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
 
 export default function Home() {
@@ -29,11 +29,8 @@ export default function Home() {
         Fields = JSON.parse(localStorage.getItem('fields'))
 
       Json && Json != null && JSON.stringify(Json) != JSON.stringify(templateField) && setJson(Json)
-      Groups && setGroups(Groups)
+      Groups && Array.isArray(Groups) && setGroups(Groups)
       Fields && setFields(Fields)
-
-      let sGroup = Object.values(Json).find((e) => e)?.group
-      selectGroup({ id: sGroup || noGroupObj, name: sGroup || noGroupObj })
     }
   }, [])
 
@@ -45,6 +42,7 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    selectGroup((groups || [])[0] || noGroupObj)
     updateContent()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
