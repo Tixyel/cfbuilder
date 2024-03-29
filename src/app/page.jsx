@@ -30,10 +30,6 @@ export default function Home() {
       setState(!state)
     }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
     let items = JSON.parse(localStorage.getItem('json'))
     if (items && Object.values(items).length) setState(!state)
 
