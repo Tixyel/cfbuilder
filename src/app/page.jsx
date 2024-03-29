@@ -12,21 +12,21 @@ import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/ut
 
 export default function Home() {
   const [json, setJson] = useState(() => {
-      if (typeof window != 'undefined' || typeof window != undefined) {
+      if (window.localStorage) {
         let item = JSON.parse(localStorage.getItem('json'))
 
         if (item) return item
       } else return templateField
     }),
     [groups, setGroups] = useState(() => {
-      if (typeof window != 'undefined' || typeof window != undefined) {
+      if (window.localStorage) {
         let item = JSON.parse(localStorage.getItem('groups'))
 
         if (item) return item
       } else return []
     }),
     [fields, setFields] = useState(() => {
-      if (typeof window != 'undefined' || typeof window != undefined) {
+      if (window.localStorage) {
         let item = JSON.parse(localStorage.getItem('fields'))
 
         if (item) return item
