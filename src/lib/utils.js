@@ -16,8 +16,6 @@ export function jsonFieldsToGroups(json) {
       }, new Set())
       .keys(),
   ).map((group) => {
-    let random = group == noGroup ? noGroup : Math.random().toString(16).slice(2)
-
     return {
       id: group,
       name: group,

@@ -17,8 +17,8 @@ export default function Home() {
     [group, selectGroup] = useState(groups[0] || { id: noGroup, name: noGroup })
 
   function updateContent() {
+    setFields(jsonFieldsToFields(json))
     setGroups(jsonFieldsToGroups(json))
-    setFields(jsonFieldsToFields(json, groups))
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
