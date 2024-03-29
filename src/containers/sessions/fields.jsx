@@ -60,20 +60,16 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
                     setFields(newFields)
                     callback(fields)
                   }}
-                  remove={(index) => {
-                    console.log(
-                      index,
-                      fields.findIndex(({ id }) => id == index),
-                    )
-                    let newFields = fields
+                  remove={(id) => {
+                    let newFields = fields,
+                      index = fields.findIndex((item) => item.id == index)
 
-                    newFields.splice(
-                      fields.findIndex(({ id }) => id == index),
-                      1,
-                    )
+                    if (index != undefined) {
+                      newFields.splice(index, 1)
 
-                    setFields(newFields)
-                    callback(newFields)
+                      setFields(newFields)
+                      callback(newFields)
+                    }
                   }}
                   index={id}
                   fieldKey={key}
