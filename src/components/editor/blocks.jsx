@@ -1,18 +1,18 @@
 import React, { useState } from 'react'
-import { ChevronsUpDown, SquareMousePointer, Plus } from 'lucide-react'
+import { ChevronsUpDown, SquareMousePointer } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
-import SortableItem from '../sortable/SortableItem'
+import SortableItem from '@/components/sortable/SortableItem'
 
-import FieldTypeInput from '../inputs/fieldType'
-import LabelInput from '../inputs/label'
-import Variable from '../inputs/variables'
-import DropdownInput from '../inputs/dropdown'
-import FieldKeyInput from '../inputs/fieldKey'
+import FieldTypeInput from '@/components/inputs/fieldType'
+import LabelInput from '@/components/inputs/label'
+import Variable from '@/components/inputs/variables'
+import DropdownInput from '@/components/inputs/dropdown'
+import FieldKeyInput from '@/components/inputs/fieldKey'
 
 function Block({ className, childrenClassName, children, ...props }) {
   return (
@@ -64,11 +64,11 @@ function Field({ className, label, value, index, onChange, ...props }) {
 
   return (
     <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
-      <FieldKeyInput index={index} key={props.Key} onChange={onChange} />
+      <FieldKeyInput index={index} value={props.Key} onChange={onChange} />
 
-      <FieldTypeInput index={index} onChange={onChange} type={type} setType={setType} />
+      <FieldTypeInput index={index} onChange={onChange} setType={setType} value={type} />
 
-      <LabelInput index={index} onChange={onChange} label={label} />
+      <LabelInput index={index} onChange={onChange} value={label} />
 
       <Variable index={index} onChange={onChange} type={type} value={value} />
 

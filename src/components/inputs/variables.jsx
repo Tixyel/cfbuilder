@@ -1,7 +1,7 @@
-import InputWithLabel from '../ui/input with label'
-import ColorpickerInput from './colorpicker'
-import GoogleFontInput from './googleFont'
-import TextInput from './text'
+import InputWithLabel from '@/components/ui/input with label'
+import ColorpickerInput from '@/components/inputs/colorpicker'
+import GoogleFontInput from '@/components/inputs/googleFont'
+import TextInput from '@/components/inputs/text'
 
 export default function Variable({ type, index, onChange, value }) {
   const variables = {

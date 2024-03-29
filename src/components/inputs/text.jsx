@@ -1,6 +1,4 @@
-//
-
-import { Input } from '../ui/input'
+import { Input } from '@/components/ui/input'
 
 export default function TextInput({ className, index, value, type, onChange, ...props }) {
   return (

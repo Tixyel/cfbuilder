@@ -4,7 +4,6 @@ export const fieldTypes = [
   'button',
   'number',
   'slider',
-  'gradient',
   'dropdown',
   'checkbox',
   'googleFont',

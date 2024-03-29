@@ -1,21 +1,12 @@
 import { fieldTypes } from '@/lib/fieldTypes'
-import InputWithLabel from '../ui/input with label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import InputWithLabel from '@/components/ui/input with label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-export default function FieldTypeInput({
-  className,
-  type,
-  setType,
-  onChange,
-  index,
-  label = 'Field type',
-  placeholder = 'Select field type',
-  ...props
-}) {
+export default function FieldTypeInput({ value, setType, onChange, index, label = 'Field type', placeholder = 'Select field type', ...props }) {
   return (
     <InputWithLabel label={label}>
       <Select
-        value={type}
+        value={value}
         id="type"
         onValueChange={(value) => {
           onChange({ target: { value, id: 'type' } }, index)

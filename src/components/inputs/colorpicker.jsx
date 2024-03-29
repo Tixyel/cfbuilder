@@ -1,16 +1,16 @@
 //
 
 import { HexAlphaColorPicker, HexColorPicker } from 'react-colorful'
-import { Button } from '../ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
-import InputWithLabel from '../ui/input with label'
-import { Input } from '../ui/input'
-import { Checkbox } from '../ui/checkbox'
-import { Label } from '../ui/label'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import InputWithLabel from '@/components/ui/input with label'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { useState } from 'react'
 
-export default function ColorpickerInput({ className, value, index, onChange, ...props }) {
+export default function ColorpickerInput({ className, value, index, onChange }) {
   const [color, setColor] = useState(value || '#864FBC'),
     [inputColor, setInputColor] = useState(color),
     [alpha, setAlpha] = useState(false)
