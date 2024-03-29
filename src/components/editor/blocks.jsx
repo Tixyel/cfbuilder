@@ -3,21 +3,16 @@ import { ChevronsUpDown, SquareMousePointer, Plus } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import InputWithLabel from '@/components/ui/input with label'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 import SortableItem from '../sortable/SortableItem'
 
-import { HexColorPicker, HexAlphaColorPicker } from 'react-colorful'
-import { Label } from '../ui/label'
-import { googleFonts as availableGoogleFonts } from '@/lib/googleFonts'
-import { fieldTypes as availableFieldTypes } from '@/lib/fieldTypes'
-import GoogleFontInput from '../inputs/googleFont'
-import ColorpickerInput from '../inputs/colorpicker'
+import FieldTypeInput from '../inputs/fieldType'
+import LabelInput from '../inputs/label'
+import Variable from '../inputs/variables'
+import DropdownInput from '../inputs/dropdown'
+import FieldKeyInput from '../inputs/fieldKey'
 
 function Block({ className, childrenClassName, children, ...props }) {
   return (
@@ -64,84 +59,20 @@ function Group({ className, name, Key: key, select, ...props }) {
   )
 }
 
-function Field({ className, children, Key, type, label, value, index, onChange, ...props }) {
-  const [typo, setTypo] = useState(type)
-
-  const variables = {
-    'googleFont': (
-      <GoogleFontInput value={value} index={index} id="value" onValueChange={(value) => onChange({ target: { value, id: 'value' } }, index)} />
-    ),
-    'colorpicker': <ColorpickerInput value={value} index={index} onChange={onChange} />,
-  }
+function Field({ className, label, value, index, onChange, ...props }) {
+  const [type, setType] = useState(props.type)
 
   return (
     <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
-      <Input
-        spellCheck={false}
-        autoComplete="off"
-        className="px-3 ring-0 h-5 bg-black/20 border-0 text-center"
-        type="text"
-        placeholder="[object name]"
-        value={Key}
-        onChange={(e) => onChange(e, index)}
-        id="key"
-      />
+      <FieldKeyInput index={index} key={props.Key} onChange={onChange} />
 
-      <InputWithLabel label="Field type">
-        <Select
-          value={typo}
-          id="type"
-          onValueChange={(value) => {
-            onChange({ target: { value, id: 'type' } }, index)
-            setTypo(value)
-          }}>
-          <SelectTrigger className="w-full ">
-            <SelectValue placeholder="Select field type" />
-          </SelectTrigger>
-          <SelectContent>
-            {availableFieldTypes.map((name) => (
-              <SelectItem key={name} value={name}>
-                {name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </InputWithLabel>
+      <FieldTypeInput index={index} onChange={onChange} type={type} setType={setType} />
 
-      <InputWithLabel label="Label" htmlFor="label">
-        <Input
-          spellCheck={false}
-          autoComplete="off"
-          type="text"
-          placeholder="Field label"
-          value={label}
-          id="label"
-          onChange={(e) => onChange(e, index)}
-        />
-      </InputWithLabel>
+      <LabelInput index={index} onChange={onChange} label={label} />
 
-      <InputWithLabel label="Value" htmlFor="value">
-        {variables[typo] || (
-          <Input
-            spellCheck={false}
-            autoComplete="off"
-            type={['number', 'slider'].some((e) => e == typo) ? typo : 'text'}
-            placeholder="Field value"
-            value={value}
-            id="value"
-            onChange={(e) => onChange(e, index)}
-          />
-        )}
-      </InputWithLabel>
+      <Variable index={index} onChange={onChange} type={type} value={value} />
 
-      {typo == 'dropdown' && (
-        <div className="w-full max-w-sm flex flex-row justify-end items-center gap-1.5">
-          <p className="text-zinc-50 text-sm ml-2">Add option</p>
-          <div className="grid place-items-center size-10  cursor-pointer">
-            <Plus color="#ffffff" size="20px" />
-          </div>
-        </div>
-      )}
+      {type == 'dropdown' && <DropdownInput />}
     </Block>
   )
 }

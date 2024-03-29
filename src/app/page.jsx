@@ -14,25 +14,17 @@ import { cn } from '@/lib/utils'
 import SortableList from '@/components/sortable/SortableList'
 import SortableItem from '@/components/sortable/SortableItem'
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { templateField as template } from '@/lib/template'
+import Groups from '@/containers/sessions/groups'
+import { noGroup } from '@/lib/group'
+import Fields from '@/containers/sessions/fields'
+import Result from '@/containers/sessions/result'
 
 export default function Home() {
-  const noGroup = 'ungrouped',
-    [json, setJson] = useState({
-      '[field 1]': { type: 'colorpicker', label: '', value: '', group: '[Group 1]' },
-      '[field 2]': { type: 'number', label: '', value: '', group: '[Group 1]' },
-      '[field 3]': { type: 'dropdown', label: '', value: '', group: '[Group 1]' },
-      '[field 4]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-      '[field 5]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-      '[field 6]': { type: 'text', label: '', value: '', group: '[Group 1]' },
-      '[field 7]': { type: 'text', label: '', value: '', group: '[Group 2]' },
-      '[field 8]': { type: 'text', label: '', value: '', group: '[Group 2]' },
-      '[field 9]': { type: 'text', label: '', value: '', group: '[Group 3]' },
-      '[field 10]': { type: 'text', label: '', value: '' },
-      '[field 11]': { type: 'text', label: '', value: '' },
-    }),
+  const [json, setJson] = useState(template),
     [groups, setGroups] = useState(
       Object.values(json).reduce((acc, value) => {
         let object = { id: value.group, name: value.group }
@@ -50,10 +42,11 @@ export default function Home() {
     ),
     [group, selectGroup] = useState(groups[0] || { id: noGroup, name: noGroup })
 
-  useEffect(() => {
-    apply()
+  useEffect(
+    () => apply(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    [],
+  )
 
   function updateJson(e) {
     let newJson = Object.values(e || fields).reduce((acc, { id, key, type, label, value, options, group }) => {
@@ -69,19 +62,6 @@ export default function Home() {
     }, {})
 
     setJson(newJson)
-  }
-
-  function handleInnerClick(key) {
-    if (key == noGroup) return selectGroup({ id: noGroup, name: noGroup })
-    else {
-      let thisGroup = groups.find(({ name }) => name == key)
-      if (thisGroup) return selectGroup(thisGroup)
-    }
-  }
-
-  function addGroup() {}
-  function addField() {
-    console.log('abacate')
   }
 
   function apply() {
@@ -108,162 +88,11 @@ export default function Home() {
 
   return (
     <main className="flex-1 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden z-20">
-      <Section className="h-full flex-[0.5]">
-        <Section.title>
-          <p className="text-zinc-50 text-sm">Add group</p>
-          <div className="grid place-items-center size-10 cursor-pointer" onClick={addGroup}>
-            <Plus color="#ffffff" size="20px" />
-          </div>
-        </Section.title>
+      <Groups groups={groups} setGroups={setGroups} group={group} selectGroup={selectGroup} />
 
-        <Divider />
+      <Fields fields={fields} setFields={setFields} updateJson={updateJson} groups={groups} group={group} />
 
-        <ScrollArea className="w-full px-3">
-          <SortableList
-            items={[...groups]}
-            onChange={(e) => {
-              setGroups(e)
-              updateJson(
-                Object.values(e).reduce((acc, { id, name }) => {
-                  if (id) {
-                    let object = fields
-                      .filter(({ group }) => group == id)
-                      .map((item) => {
-                        item.group = name
-                        return item
-                      })
-
-                    acc = [...acc, ...object]
-                  }
-
-                  return acc
-                }, []),
-                true,
-              )
-            }}
-            renderItem={(item) => {
-              let { id, name } = item
-
-              return (
-                <SortableItem id={id} className="my-3 first:mt-0 last:mb-0">
-                  <Group select={handleInnerClick} key={name} Key={id} name={name} className={group.id == id ? 'active' : ''} />
-                </SortableItem>
-              )
-            }}
-          />
-        </ScrollArea>
-      </Section>
-
-      <Section className="h-full flex-[0.5]">
-        <Section.title>
-          <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
-          <p className="text-zinc-50 text-sm">Add field</p>
-
-          <Dialog>
-            <DialogTrigger>
-              <div className="grid place-items-center size-10  cursor-pointer">
-                <Plus color="#ffffff" size="20px" />
-              </div>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add field</DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Key
-                  </Label>
-                  <Input id="key" defaultValue="[field 0]" className="col-span-3" />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="username" className="text-right">
-                    Username
-                  </Label>
-                  <Input id="username" defaultValue="@peduarte" className="col-span-3" />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit">Save changes</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </Section.title>
-
-        <Divider />
-
-        <ScrollArea className="w-full px-3">
-          <SortableList
-            fullItems={fields}
-            items={fields.filter((item) => item.group == group.id || (group.id == noGroup && !item.group))}
-            onChange={(e) => {
-              e = Object.entries({
-                [group.id]: e,
-                ...Object.values(fields)
-                  .filter((item) => item.group != group.id || (group.id == noGroup && !item.group))
-                  .reduce((acc, value) => {
-                    !acc[value.group || noGroup] && (acc[value.group || noGroup] = [])
-
-                    acc[value.group || noGroup] = [...acc[value.group || noGroup], value]
-
-                    return acc
-                  }, {}),
-              })
-                .sort(([a], [b]) => groups.findIndex(({ id }) => id == a) - groups.findIndex(({ id }) => id == b))
-                .reduce((acc, [_, value]) => (acc = [...acc, ...value]), [])
-
-              setFields(e)
-              updateJson(e)
-            }}
-            renderItem={(item) => {
-              let { id, key, type, label, value, visible = true } = item
-
-              return (
-                <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
-                  <Field
-                    onChange={(e, index) => {
-                      let field = index,
-                        name = e.target.id,
-                        value = e.target.value
-
-                      let newFields = fields
-
-                      newFields[fields.findIndex(({ id }) => id == field)][name] = value
-
-                      setFields(newFields)
-                      updateJson(fields)
-                    }}
-                    index={id}
-                    Key={key}
-                    type={type}
-                    label={label}
-                    value={value}></Field>
-                </SortableItem>
-              )
-            }}
-          />
-        </ScrollArea>
-      </Section>
-
-      <Section className={'flex-1 h-full gap-4   rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
-        <Section.title>
-          <p className="text-zinc-50 text-base font-bold flex-1 ml-5 w-full">Result</p>
-          <Button onClick={apply} className="hover:border-transparent transition duration-700 border-[#864FBC]" variant="outline">
-            Apply
-          </Button>
-        </Section.title>
-
-        <div className="h-full w-full rounded-xl overflow-hidden">
-          <Monaco
-            onChange={(e) => setJson(JSON.parse(e))}
-            options={{ minimap: { enabled: false }, wordWrap: 'on' }}
-            width="100%"
-            height="100%"
-            defaultLanguage="json"
-            value={JSON.stringify(json, null, 2)}
-          />
-        </div>
-      </Section>
+      <Result json={json} setJson={setJson} onClick={apply} />
     </main>
   )
 }
