@@ -37,11 +37,11 @@ export default function Home() {
     let items = JSON.parse(localStorage.getItem('json'))
     if (items && Object.values(items).length) setState(!state)
 
+    selectGroup((groups || [])[0] || noGroupObj)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    selectGroup((groups || [])[0] || noGroupObj)
     updateContent()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
