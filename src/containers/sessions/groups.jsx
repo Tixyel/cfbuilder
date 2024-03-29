@@ -1,5 +1,3 @@
-//
-
 import { Group } from '@/components/editor/blocks'
 import Section from '@/components/editor/section'
 import SortableItem from '@/components/sortable/SortableItem'
@@ -8,12 +6,13 @@ import Divider from '@/components/ui/divider'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Plus } from 'lucide-react'
 import { noGroup } from '@/lib/group'
+import { concatJson, reorderGroupsInJson } from '@/lib/utils'
 
-export default function Groups({ groups, setGroups, group, selectGroup }) {
-  function handleInnerClick(key) {
+export default function Groups({ groups, setGroups, group, selectGroup, updateJson, fields }) {
+  function select(key) {
     if (key == noGroup) return selectGroup({ id: noGroup, name: noGroup })
     else {
-      let thisGroup = groups.find(({ name }) => name == key)
+      let thisGroup = groups.find(({ id }) => id == key)
       if (thisGroup) return selectGroup(thisGroup)
     }
   }
@@ -31,33 +30,40 @@ export default function Groups({ groups, setGroups, group, selectGroup }) {
 
       <ScrollArea className="w-full px-3">
         <SortableList
-          items={[...groups]}
-          onChange={(e) => {
-            setGroups(e)
-            updateJson(
-              Object.values(e).reduce((acc, { id, name }) => {
-                if (id) {
-                  let object = fields
-                    .filter(({ group }) => group == id)
-                    .map((item) => {
-                      item.group = name
-                      return item
-                    })
+          items={groups}
+          onChange={(groups) => {
+            setGroups(groups)
 
-                  acc = [...acc, ...object]
-                }
-
-                return acc
-              }, []),
-              true,
-            )
+            updateJson(reorderGroupsInJson(groups, fields))
           }}
           renderItem={(item) => {
             let { id, name } = item
 
             return (
               <SortableItem id={id} className="my-3 first:mt-0 last:mb-0">
-                <Group select={handleInnerClick} key={name} Key={id} name={name} className={group.id == id ? 'active' : ''} />
+                <Group
+                  id={id}
+                  select={select}
+                  onChange={(e) => {
+                    let group = { id: e.target.parentNode.parentNode.id, name: e.target.value },
+                      newGroups = groups,
+                      currentFields = fields
+                        .filter((item) => item.group.id == group.id || (group.id == noGroup && !item.group.id))
+                        .map((item) => {
+                          item.group.id != noGroup && (item.group.name = group.name)
+                          return item
+                        }),
+                      newJson = concatJson(group, groups, currentFields, fields)
+
+                    newGroups[groups.findIndex(({ id }) => id == group.id)].name = group.name
+
+                    setGroups(newGroups)
+                    updateJson(reorderGroupsInJson(groups, newJson))
+                  }}
+                  groupKey={id}
+                  name={name}
+                  className={group.id == id ? 'active' : ''}
+                />
               </SortableItem>
             )
           }}

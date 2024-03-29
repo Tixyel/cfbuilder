@@ -1,1 +1,1 @@
-export const noGroup = 'ungrouped'
+export const noGroup = '⠀ungrouped⠀'

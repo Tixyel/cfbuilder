@@ -7,6 +7,7 @@ export default function Result({ json, setJson, onClick }) {
     <Section className={'flex-1 h-full gap-4   rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1 ml-5 w-full">Result</p>
+        <p className="text-zinc-50 ml-5 text-xs">{Object.keys(json).length} fields</p>
         <Button onClick={onClick} className="hover:border-transparent transition duration-700 border-[#864FBC]" variant="outline">
           Apply
         </Button>

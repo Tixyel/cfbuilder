@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { noGroup } from '@/lib/group'
-import { cn } from '@/lib/utils'
+import { cn, concatJson } from '@/lib/utils'
 import { Plus } from 'lucide-react'
 
 export default function Fields({ fields, setFields, updateJson, groups, group }) {
@@ -56,25 +56,12 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
 
       <ScrollArea className="w-full px-3">
         <SortableList
-          items={fields.filter((item) => item.group == group.id || (group.id == noGroup && !item.group))}
-          onChange={(e) => {
-            e = Object.entries({
-              [group.id]: e,
-              ...Object.values(fields)
-                .filter((item) => item.group != group.id || (group.id == noGroup && !item.group))
-                .reduce((acc, value) => {
-                  !acc[value.group || noGroup] && (acc[value.group || noGroup] = [])
+          items={fields.filter((item) => item.group.name == group.name || (group.name == noGroup && !item.group.name))}
+          onChange={(currentFields) => {
+            currentFields = concatJson(group, groups, currentFields, fields)
 
-                  acc[value.group || noGroup] = [...acc[value.group || noGroup], value]
-
-                  return acc
-                }, {}),
-            })
-              .sort(([a], [b]) => groups.findIndex(({ id }) => id == a) - groups.findIndex(({ id }) => id == b))
-              .reduce((acc, [_, value]) => (acc = [...acc, ...value]), [])
-
-            setFields(e)
-            updateJson(e)
+            setFields(currentFields)
+            updateJson(currentFields)
           }}
           renderItem={(item) => {
             let { id, key, type, label, value } = item
@@ -83,19 +70,16 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
               <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
                 <Field
                   onChange={(e, index) => {
-                    let field = index,
-                      name = e.target.id,
-                      value = e.target.value
+                    let field = { id: e.target.id, value: e.target.value },
+                      newFields = fields
 
-                    let newFields = fields
-
-                    newFields[fields.findIndex(({ id }) => id == field)][name] = value
+                    newFields[fields.findIndex(({ id }) => id == index)][field.id] = field.value
 
                     setFields(newFields)
                     updateJson(fields)
                   }}
                   index={id}
-                  Key={key}
+                  fieldKey={key}
                   type={type}
                   label={label}
                   value={value}></Field>

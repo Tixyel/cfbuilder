@@ -42,7 +42,7 @@ export const templateField = {
     group: '[Group 2]',
   },
   '[field 8]': {
-    type: 'googleFont',
+    type: 'colorpicker',
     label: '',
     value: '',
     group: '[Group 2]',

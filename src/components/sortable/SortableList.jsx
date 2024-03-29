@@ -16,6 +16,7 @@ export default function SortableList({ items, onChange, renderItem }) {
 
   return (
     <DndContext
+      id="dnd"
       modifiers={[restrictToVerticalAxis, restrictToWindowEdges]}
       sensors={sensors}
       onDragStart={({ active }) => setActive(active)}

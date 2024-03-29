@@ -13,6 +13,7 @@ import LabelInput from '@/components/inputs/label'
 import Variable from '@/components/inputs/variables'
 import DropdownInput from '@/components/inputs/dropdown'
 import FieldKeyInput from '@/components/inputs/fieldKey'
+import { noGroup } from '@/lib/group'
 
 function Block({ className, childrenClassName, children, ...props }) {
   return (
@@ -32,7 +33,7 @@ function Block({ className, childrenClassName, children, ...props }) {
   )
 }
 
-function Group({ className, name, Key: key, select, ...props }) {
+function Group({ className, index, name, groupKey, onChange, select, ...props }) {
   const [group, setGroup] = useState(name)
 
   return (
@@ -48,23 +49,24 @@ function Group({ className, name, Key: key, select, ...props }) {
         placeholder="Group title"
         onChange={(e) => {
           setGroup(e.target.value)
+          onChange(e)
         }}
         value={group}
-        disabled={name == 'ungrouped'}
+        disabled={name == noGroup}
       />
-      <Button className="bg-transparent hover:bg-transparent" size={'icon'} onClick={() => select(key, name)}>
+      <Button className="bg-transparent hover:bg-transparent" size={'icon'} onClick={() => select(groupKey, name)}>
         <SquareMousePointer size={20} color="white"></SquareMousePointer>
       </Button>
     </Block>
   )
 }
 
-function Field({ className, label, value, index, onChange, ...props }) {
+function Field({ className, label, value, index, fieldKey, onChange, ...props }) {
   const [type, setType] = useState(props.type)
 
   return (
     <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
-      <FieldKeyInput index={index} value={props.Key} onChange={onChange} />
+      <FieldKeyInput index={index} value={fieldKey} onChange={onChange} />
 
       <FieldTypeInput index={index} onChange={onChange} setType={setType} value={type} />
 
