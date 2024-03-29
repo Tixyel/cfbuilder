@@ -17,9 +17,9 @@ export default function Home() {
     [fields, setFields] = useState([]),
     [group, selectGroup] = useState(groups[0] || noGroupObj)
 
-  function updateContent() {
-    setFields(jsonFieldsToFields(json))
-    setGroups(jsonFieldsToGroups(json))
+  function updateContent(jSon = json) {
+    setFields(jsonFieldsToFields(jSon))
+    setGroups(jsonFieldsToGroups(jSon))
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -28,7 +28,7 @@ export default function Home() {
   useEffect(() => {
     !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groups])
+  }, [])
 
   return (
     <main className="flex-1 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden z-20">
@@ -41,7 +41,15 @@ export default function Home() {
         updateJson={(e) => setJson(updateJson(e || fields))}
       />
 
-      <Fields fields={fields} setFields={setFields} updateJson={(e) => setJson(updateJson(e || fields))} groups={groups} group={group} />
+      <Fields
+        fields={fields}
+        setFields={setFields}
+        callback={(e) => setJson(updateJson(e || fields))}
+        groups={groups}
+        setGroups={setGroups}
+        group={group}
+        updateContent={updateContent}
+      />
 
       <Result json={json} setJson={setJson} onClick={updateContent} />
     </main>

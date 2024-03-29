@@ -61,12 +61,20 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
   )
 }
 
-function Field({ className, label, value, index, fieldKey, onChange, ...props }) {
+function Field({ fields, className, label, value, index, fieldKey, fieldKeyId, onChange, ...props }) {
   const [type, setType] = useState(props.type)
 
   return (
     <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
-      <FieldKeyInput index={index} value={fieldKey} onChange={onChange} />
+      <FieldKeyInput
+        className={cn(
+          fields.some((item) => item.key == fieldKey && item.id != fieldKeyId) && 'invalid',
+          '[&.invalid]:border-red-500 [&.invalid]:border',
+        )}
+        index={index}
+        value={fieldKey}
+        onChange={onChange}
+      />
 
       <FieldTypeInput index={index} onChange={onChange} setType={setType} value={type} />
 

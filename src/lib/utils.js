@@ -11,7 +11,7 @@ export function jsonFieldsToGroups(json) {
   return Array.from(
     Object.values(json)
       .reduce((acc, field) => {
-        acc.add(field.group || noGroup)
+        typeof field == 'object' && acc.add(field?.group?.name || field?.group || noGroup)
 
         return acc
       }, new Set())
@@ -25,11 +25,27 @@ export function jsonFieldsToGroups(json) {
 }
 
 export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
-  return Object.entries(json).reduce((acc, [key, { type, label, value, group, options, min, max, step }]) => {
-    acc = [
-      ...acc,
-      { id: key, key, type, label, value, options, min, max, step, group: groups.find(({ name }) => name == group || (name == noGroup && !group)) },
-    ]
+  console.log(json, groups)
+  return Object.entries(json).reduce((acc, [key, field]) => {
+    if (field) {
+      let { type, label, value, group, options, min, max, step } = field
+
+      acc = [
+        ...acc,
+        {
+          id: field.key || key,
+          key: field.key || key,
+          type,
+          label,
+          value,
+          options,
+          min,
+          max,
+          step,
+          group: groups.find(({ name }) => name == group || (name == noGroup && !group)),
+        },
+      ]
+    }
 
     return acc
   }, [])
@@ -56,9 +72,12 @@ export function concatJson(group, groups, values, fields) {
   return Object.entries({
     [group.name]: values,
     ...Object.values(fields)
-      .filter((item) => item.group.id != group.id || (group.id == noGroup && !item.group.id))
+      .filter((item) => {
+        console.log(item)
+        return item?.group?.id != group.id || (group.id == noGroup && !item?.group?.id)
+      })
       .reduce((acc, value) => {
-        let name = value.group.name
+        let name = value.group?.name || noGroup
 
         acc[name] = [...(acc[name] || []), value]
 
@@ -69,9 +88,9 @@ export function concatJson(group, groups, values, fields) {
     .reduce((acc, [_, value]) => (acc = [...acc, ...value]), [])
 }
 
-export function reorderGroupsInJson(values, fields) {
-  return Object.values(values).reduce((acc, { id }) => {
-    acc = [...acc, ...fields.filter((item) => (item.group.id || noGroup) == id)]
+export function reorderGroupsInJson(groups, fields) {
+  return Object.values(groups).reduce((acc, { id }) => {
+    acc = [...acc, ...fields.filter((item) => (item.group?.id || noGroup) == id)]
 
     return acc
   }, [])

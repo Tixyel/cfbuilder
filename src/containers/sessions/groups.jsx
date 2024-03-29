@@ -20,10 +20,7 @@ export default function Groups({ groups, setGroups, group, selectGroup, updateJs
   return (
     <Section className="h-full flex-[0.5]">
       <Section.title>
-        <p className="text-zinc-50 text-sm">Add group</p>
-        <div className="grid place-items-center size-10 cursor-pointer">
-          <Plus color="#ffffff" size="20px" />
-        </div>
+        <p className="w-full text-zinc-50 text-sm">Group list</p>
       </Section.title>
 
       <Divider />

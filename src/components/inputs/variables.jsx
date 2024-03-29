@@ -3,7 +3,7 @@ import ColorpickerInput from '@/components/inputs/colorpicker'
 import GoogleFontInput from '@/components/inputs/googleFont'
 import TextInput from '@/components/inputs/text'
 
-export default function Variable({ type, index, onChange, value }) {
+export default function Variable({ type, index = '', onChange, value }) {
   const variables = {
     'googleFont': (
       <GoogleFontInput

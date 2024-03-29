@@ -1,55 +1,43 @@
-//
-
 import { Field } from '@/components/editor/blocks'
 import Section from '@/components/editor/section'
 import SortableItem from '@/components/sortable/SortableItem'
 import SortableList from '@/components/sortable/SortableList'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import Divider from '@/components/ui/divider'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { noGroup } from '@/lib/group'
-import { cn, concatJson } from '@/lib/utils'
-import { Plus } from 'lucide-react'
+import { noGroup, newGroup as newGroupName, newGroupObj } from '@/lib/group'
+import { cn, concatJson, reorderGroupsInJson } from '@/lib/utils'
+import AddField from '@/components/editor/addField'
 
-export default function Fields({ fields, setFields, updateJson, groups, group }) {
+export default function Fields({ fields, setFields, callback, groups, setGroups, group, updateContent }) {
+  function onClickAdd(group, field) {
+    let newFields = fields.filter((item) => item.group?.id == group || (group == noGroup && !item.group?.id)),
+      thisGroup = groups.find(({ id }) => id == group),
+      newGroups = groups
+
+    if (!thisGroup) {
+      thisGroup = newGroupObj
+      newGroups.push(thisGroup)
+    }
+
+    newFields.unshift({ id: field?.key, ...field, group: thisGroup })
+
+    let newJson = concatJson(thisGroup, newGroups, newFields, group == newGroupName ? [...fields, ...newFields] : fields)
+    console.log('antes', newJson)
+
+    newJson = reorderGroupsInJson(newGroups, newJson)
+
+    console.log('depois', newJson)
+
+    callback(newJson)
+    updateContent(newJson)
+  }
+
   return (
     <Section className="h-full flex-[0.5]">
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
-        <p className="text-zinc-50 text-sm">Add field</p>
 
-        <Dialog>
-          <DialogTrigger>
-            <div className="grid place-items-center size-10  cursor-pointer">
-              <Plus color="#ffffff" size="20px" />
-            </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Add field</DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Key
-                </Label>
-                <Input id="key" defaultValue="[field 0]" className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="username" className="text-right">
-                  Username
-                </Label>
-                <Input id="username" defaultValue="@peduarte" className="col-span-3" />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit">Save changes</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <AddField fields={fields} groups={groups} group={group} onAdd={onClickAdd} />
       </Section.title>
 
       <Divider />
@@ -61,7 +49,7 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
             currentFields = concatJson(group, groups, currentFields, fields)
 
             setFields(currentFields)
-            updateJson(currentFields)
+            callback(currentFields)
           }}
           renderItem={(item) => {
             let { id, key, type, label, value } = item
@@ -69,6 +57,7 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
             return (
               <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
                 <Field
+                  fields={fields}
                   onChange={(e, index) => {
                     let field = { id: e.target.id, value: e.target.value },
                       newFields = fields,
@@ -77,10 +66,11 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
                     newFields[fields.findIndex(({ id }) => id == index)][field.id] = value
 
                     setFields(newFields)
-                    updateJson(fields)
+                    callback(fields)
                   }}
                   index={id}
                   fieldKey={key}
+                  fieldKeyId={id}
                   type={type}
                   label={label}
                   value={value}></Field>
