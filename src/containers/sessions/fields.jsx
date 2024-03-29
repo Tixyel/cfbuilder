@@ -48,7 +48,6 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
             return (
               <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
                 <Field
-                  {...item}
                   fields={fields}
                   onChange={(e, index) => {
                     let field = { id: e.target.id, value: e.target.value },
@@ -76,7 +75,8 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
                   fieldKeyId={id}
                   type={type}
                   label={label}
-                  value={value}></Field>
+                  value={value}
+                  options={item.options}></Field>
               </SortableItem>
             )
           }}

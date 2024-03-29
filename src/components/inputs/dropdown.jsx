@@ -37,9 +37,9 @@ export default function DropdownInput({ options }) {
             acc = [...acc, { key, value }]
             return acc
           }, [])
-          .map(({ key, value }) => {
-            return <Option key={value} value={{ key, value }} />
-          })}
+          .map(({ key, value }) => (
+            <Option key={value} value={{ key, value }} />
+          ))}
       </div>
     </div>
   )

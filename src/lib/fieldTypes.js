@@ -8,7 +8,7 @@ export const fieldTypes = {
   'checkbox': (value) => new Boolean(value),
   'googleFont': (value) => value,
   'colorpicker': (value) => value,
-  'audio-input': (value) => value,
+  'image-input': (value) => value,
   'sound-input': (value) => value,
   'video-input': (value) => value,
 }
