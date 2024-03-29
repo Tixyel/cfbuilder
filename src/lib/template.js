@@ -36,7 +36,7 @@ export const templateField = {
     group: '[Group 1]',
   },
   '[field 7]': {
-    type: 'text',
+    type: 'googleFont',
     label: '',
     value: '',
     group: '[Group 2]',

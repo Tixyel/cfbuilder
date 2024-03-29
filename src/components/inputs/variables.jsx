@@ -6,7 +6,13 @@ import TextInput from '@/components/inputs/text'
 export default function Variable({ type, index, onChange, value }) {
   const variables = {
     'googleFont': (
-      <GoogleFontInput value={value} index={index} id="value" onValueChange={(value) => onChange({ target: { value, id: 'value' } }, index)} />
+      <GoogleFontInput
+        value={value}
+        index={index}
+        id="value"
+        onChange={onChange}
+        // onValueChange={(value) => onChange({ target: { value, id: 'value' } }, index)}
+      />
     ),
     'colorpicker': <ColorpickerInput value={value} index={index} onChange={onChange} />,
   }
