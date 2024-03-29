@@ -32,11 +32,11 @@ export default function Result({ json, setJson, onClick }) {
 
       <div className="flex h-full w-full rounded-xl overflow-hidden">
         <Monaco
-          className="flex-1"
+          className="flex-1 h-full"
           onChange={(e) => setJson(JSON.parse(e))}
           options={{ minimap: { enabled: false }, wordWrap: 'on' }}
           width="100%"
-          height="100dvh"
+          height="100%"
           defaultLanguage="json"
           value={JSON.stringify(json, null, 2)}
         />

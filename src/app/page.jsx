@@ -9,11 +9,15 @@ import Result from '@/containers/sessions/result'
 
 import { noGroupObj } from '@/lib/group'
 import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
-import { toast } from 'sonner'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function Home() {
-  const [json, setJson] = useState(templateField),
+  const [json, setJson] = useState(() => {
+      let item = JSON.parse(localStorage.getItem('json'))
+
+      if (item) {
+        return item
+      } else return templateField
+    }),
     [groups, setGroups] = useState([]),
     [fields, setFields] = useState([]),
     [group, selectGroup] = useState(groups[0] || noGroupObj),
@@ -24,13 +28,20 @@ export default function Home() {
     setGroups(jsonFieldsToGroups(jSon))
   }
 
+  useEffect(() => {
+    let items = JSON.parse(localStorage.getItem('json'))
+    if (Object.values(items).length) setState(!state)
+
+    !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => updateContent(), [state])
 
   useEffect(() => {
-    !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    localStorage.setItem('json', JSON.stringify(json, null, 2))
+  }, [json])
 
   return (
     <main
