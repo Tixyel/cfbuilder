@@ -5,6 +5,7 @@ import './layout.css'
 
 import { Poppins } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
+import { Analytics } from '@vercel/analytics/react'
 
 const poppins = Poppins({ weight: ['100', '200', '300', '400', '500', '600', '700', '800'], subsets: ['latin'] })
 
@@ -42,7 +43,7 @@ export default function RootLayout({ children }) {
           'bg-[#000000]',
         )}>
         {/* <div className="bacate absolute w-full h-[100%] scale-y-50 scale-x-75 origin-top top-[-30%] bg-[#592e76] rounded-b-full"></div> */}
-
+        <Analytics />
         <Credits />
         <div className="absolute inset-0">
           <Toaster position="bottom-left" />
