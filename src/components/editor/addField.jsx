@@ -142,7 +142,7 @@ export default function AddField({ groups, fields, group, onAdd }) {
         <DialogFooter>
           <DialogClose asChild>
             <Button
-              disabled={fields?.some((item) => item.key == fieldKey)}
+              disabled={fields?.some((item) => item.key == fieldKey || !fieldKey.length)}
               variant="outline"
               onClick={() => {
                 onAdd(groupType, { key: fieldKey, type: fieldType, label: fieldLabel, value: fieldValue })
