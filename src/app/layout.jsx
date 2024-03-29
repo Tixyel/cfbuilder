@@ -43,12 +43,12 @@ export default function RootLayout({ children }) {
           'bg-[#000000]',
         )}>
         {/* <div className="bacate absolute w-full h-[100%] scale-y-50 scale-x-75 origin-top top-[-30%] bg-[#592e76] rounded-b-full"></div> */}
-        <Analytics />
         <Credits />
         <div className="absolute inset-0">
           <Toaster position="bottom-left" />
         </div>
         {children}
+        <Analytics />
       </body>
     </html>
   )
