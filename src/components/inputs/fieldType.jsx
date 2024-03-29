@@ -18,7 +18,7 @@ export default function FieldTypeInput({ value, setType, onChange, index, label 
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
-          {fieldTypes.map((name) => (
+          {Object.keys(fieldTypes).map((name) => (
             <SelectItem key={name} value={name}>
               {name}
             </SelectItem>

@@ -71,9 +71,10 @@ export default function Fields({ fields, setFields, updateJson, groups, group })
                 <Field
                   onChange={(e, index) => {
                     let field = { id: e.target.id, value: e.target.value },
-                      newFields = fields
+                      newFields = fields,
+                      value = field.value
 
-                    newFields[fields.findIndex(({ id }) => id == index)][field.id] = field.value
+                    newFields[fields.findIndex(({ id }) => id == index)][field.id] = value
 
                     setFields(newFields)
                     updateJson(fields)

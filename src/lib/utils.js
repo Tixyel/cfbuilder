@@ -1,6 +1,7 @@
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { noGroup } from '@/lib/group'
+import { fieldTypes } from './fieldTypes'
 
 export function cn(...inputs) {
   return twMerge(clsx(inputs))
@@ -24,16 +25,26 @@ export function jsonFieldsToGroups(json) {
 }
 
 export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
-  return Object.entries(json).reduce((acc, [key, { type, label, value, group, options }]) => {
-    acc = [...acc, { id: key, key, type, label, value, options, group: groups.find(({ name }) => name == group || (name == noGroup && !group)) }]
+  return Object.entries(json).reduce((acc, [key, { type, label, value, group, options, ...field }]) => {
+    acc = [
+      ...acc,
+      { id: key, key, type, label, value, options, ...field, group: groups.find(({ name }) => name == group || (name == noGroup && !group)) },
+    ]
 
     return acc
   }, [])
 }
 
 export function updateJson(fields) {
-  return Object.values(fields).reduce((acc, { key, type, label, value, options, group }) => {
-    acc[key] = { type, label, value, options, group: group.name == noGroup ? undefined : group.name }
+  return Object.values(fields).reduce((acc, { key, type, label, value, options, group, ...field }) => {
+    acc[key] = {
+      type,
+      label,
+      value: Object.keys(fieldTypes).some((t) => t == type) ? fieldTypes[type](value) : value.toString(),
+      options,
+      ...field,
+      group: group.name == noGroup ? undefined : group.name,
+    }
 
     return acc
   }, {})
