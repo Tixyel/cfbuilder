@@ -28,7 +28,6 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
     <Section className="h-full flex-[0.5] max-h-screen">
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
-
         <AddField fields={fields} groups={groups} group={group} onAdd={onClickAdd} />
       </Section.title>
 
@@ -49,6 +48,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
             return (
               <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
                 <Field
+                  {...item}
                   fields={fields}
                   onChange={(e, index) => {
                     let field = { id: e.target.id, value: e.target.value },

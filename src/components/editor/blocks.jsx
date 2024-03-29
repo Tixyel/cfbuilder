@@ -89,7 +89,7 @@ function Field({ fields, className, label, value, index, remove, fieldKey, field
 
       <Variable index={index} onChange={onChange} type={type} value={value} />
 
-      {type == 'dropdown' && <DropdownInput />}
+      {type == 'dropdown' && <DropdownInput index={index} {...props} />}
     </Block>
   )
 }
