@@ -3,13 +3,15 @@ import { cn } from '@/lib/utils'
 import './globals.css'
 import './layout.css'
 
-import { Inter } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
-const inter = Inter({ subsets: ['latin'] })
+
+const poppins = Poppins({ weight: ['100', '200', '300', '400', '500', '600', '700', '800'], subsets: ['latin'] })
 
 export const metadata = {
   title: 'Custom Fields Builder',
   description: 'Developed by Tixyel',
+  icons: { icon: '/tixyel.ico' },
 }
 
 function Credits() {
@@ -35,7 +37,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body
         className={cn(
-          inter.className,
+          poppins.className,
           'w-full flex flex-col justify-center items-stretch min-h-screen h-screen max-h-screen overflow-hidden gap-2',
           'bg-[#000000]',
         )}>
