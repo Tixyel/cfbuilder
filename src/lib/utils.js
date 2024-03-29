@@ -25,10 +25,10 @@ export function jsonFieldsToGroups(json) {
 }
 
 export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
-  return Object.entries(json).reduce((acc, [key, { type, label, value, group, options, ...field }]) => {
+  return Object.entries(json).reduce((acc, [key, { type, label, value, group, options, min, max, step }]) => {
     acc = [
       ...acc,
-      { id: key, key, type, label, value, options, ...field, group: groups.find(({ name }) => name == group || (name == noGroup && !group)) },
+      { id: key, key, type, label, value, options, min, max, step, group: groups.find(({ name }) => name == group || (name == noGroup && !group)) },
     ]
 
     return acc
@@ -36,13 +36,15 @@ export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
 }
 
 export function updateJson(fields) {
-  return Object.values(fields).reduce((acc, { key, type, label, value, options, group, ...field }) => {
+  return Object.values(fields).reduce((acc, { key, type, label, value, options, group, min, max, step }) => {
     acc[key] = {
       type,
       label,
       value: Object.keys(fieldTypes).some((t) => t == type) ? fieldTypes[type](value) : value.toString(),
       options,
-      ...field,
+      min,
+      max,
+      step,
       group: group.name == noGroup ? undefined : group.name,
     }
 
