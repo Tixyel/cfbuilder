@@ -5,7 +5,7 @@ export default function TextInput({ className, index, value, type, onChange, ...
     <Input
       spellCheck={false}
       autoComplete="off"
-      type={['number', 'slider'].some((e) => e == type) ? type : 'text'}
+      type={['number', 'slider'].some((e) => e == type) ? 'number' : 'text'}
       placeholder="Field value"
       value={value}
       id="value"

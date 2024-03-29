@@ -12,3 +12,5 @@ export const fieldTypes = [
   'sound-input',
   'video-input',
 ]
+
+export const customFieldTypes = ['gradient', 'array', '']
