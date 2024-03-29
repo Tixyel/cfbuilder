@@ -15,6 +15,7 @@ import Variable from '../inputs/variables'
 import Divider from '../ui/divider'
 import { newGroup, noGroup } from '@/lib/group'
 import FieldKeyInput from '../inputs/fieldKey'
+import { Input } from '../ui/input'
 
 function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) {
   const [open, setOpen] = useState(false)
@@ -39,7 +40,7 @@ function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) 
                 <CommandItem
                   className="my-1 mx-1"
                   key="new"
-                  value="new"
+                  value="new "
                   onSelect={(currentValue) => {
                     currentValue = newGroup
                     setValue(currentValue == value ? '' : currentValue)
@@ -48,7 +49,7 @@ function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) 
 
                     setOpen(false)
                   }}>
-                  <Check className={cn('mr-2 h-4 w-4', value == newGroup ? 'opacity-100' : 'opacity-0')} />
+                  <Check className={cn('mr-2 h-4 w-4', value == 'new ' ? 'opacity-100' : 'opacity-0')} />
                   New group
                 </CommandItem>
 
@@ -82,7 +83,7 @@ function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) 
 
 export default function AddField({ groups, fields, group, onAdd }) {
   const [groupType, setGroupType] = useState(group.name),
-    [fieldKey, setFieldKey] = useState(''),
+    [fieldKey, setFieldKey] = useState('field'),
     [fieldType, setFieldType] = useState('text'),
     [fieldLabel, setFieldLabel] = useState(''),
     [fieldValue, setFieldValue] = useState('')
@@ -108,13 +109,26 @@ export default function AddField({ groups, fields, group, onAdd }) {
 
           <Divider />
 
-          <FieldKeyInput
+          <InputWithLabel label={'Field key'}>
+            <Input
+              className={cn(
+                fields.some((item) => item.key == fieldKey || !fieldKey.length) && 'invalid',
+                '[&.invalid]:border-red-500 [&.invalid]:border',
+              )}
+              value={fieldKey}
+              onChange={(e) => setFieldKey(e.target.value)}
+              placeholder="Field key"
+            />
+          </InputWithLabel>
+
+          {/* <LabelInput value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} placeholder="Field label" /> */}
+          {/* <FieldKeyInput
             className={cn(fields.some((item) => item.key == fieldKey) && 'invalid', '[&.invalid]:border-red-500 [&.invalid]:border')}
             value={fieldKey}
             onChange={(e) => setFieldKey(e.target.value)}
-          />
+          /> */}
 
-          <FieldTypeInput
+          {/* <FieldTypeInput
             value={fieldType}
             onValueChange={(e) => {
               setFieldType(e.target.value)
@@ -123,7 +137,7 @@ export default function AddField({ groups, fields, group, onAdd }) {
 
           <LabelInput value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} placeholder="Field label" />
 
-          <Variable type={fieldType} value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} />
+          <Variable type={fieldType} value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} /> */}
         </div>
         <DialogFooter>
           <DialogClose asChild>

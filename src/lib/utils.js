@@ -25,7 +25,6 @@ export function jsonFieldsToGroups(json) {
 }
 
 export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
-  console.log(json, groups)
   return Object.entries(json).reduce((acc, [key, field]) => {
     if (field) {
       let { type, label, value, group, options, min, max, step } = field
@@ -73,7 +72,6 @@ export function concatJson(group, groups, values, fields) {
     [group.name]: values,
     ...Object.values(fields)
       .filter((item) => {
-        console.log(item)
         return item?.group?.id != group.id || (group.id == noGroup && !item?.group?.id)
       })
       .reduce((acc, value) => {

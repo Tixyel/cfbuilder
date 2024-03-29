@@ -8,7 +8,7 @@ import { noGroup, newGroup as newGroupName, newGroupObj } from '@/lib/group'
 import { cn, concatJson, reorderGroupsInJson } from '@/lib/utils'
 import AddField from '@/components/editor/addField'
 
-export default function Fields({ fields, setFields, callback, groups, setGroups, group, updateContent }) {
+export default function Fields({ fields, setFields, callback, groups, setGroups, selectGroup, group, updateContent }) {
   function onClickAdd(group, field) {
     let newFields = fields.filter((item) => item.group?.id == group || (group == noGroup && !item.group?.id)),
       thisGroup = groups.find(({ id }) => id == group),
@@ -21,15 +21,16 @@ export default function Fields({ fields, setFields, callback, groups, setGroups,
 
     newFields.unshift({ id: field?.key, ...field, group: thisGroup })
 
+    console.log('new groups', newGroups, thisGroup)
+
     let newJson = concatJson(thisGroup, newGroups, newFields, group == newGroupName ? [...fields, ...newFields] : fields)
-    console.log('antes', newJson)
 
     newJson = reorderGroupsInJson(newGroups, newJson)
 
-    console.log('depois', newJson)
-
     callback(newJson)
-    updateContent(newJson)
+    // updateContent(newJson)
+    // setGroups(newGroups)
+    // selectGroup(thisGroup)
   }
 
   return (

@@ -15,7 +15,8 @@ export default function Home() {
   const [json, setJson] = useState(templateField),
     [groups, setGroups] = useState([]),
     [fields, setFields] = useState([]),
-    [group, selectGroup] = useState(groups[0] || noGroupObj)
+    [group, selectGroup] = useState(groups[0] || noGroupObj),
+    [state, setState] = useState(false)
 
   function updateContent(jSon = json) {
     setFields(jsonFieldsToFields(jSon))
@@ -23,7 +24,7 @@ export default function Home() {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => updateContent(), [])
+  useEffect(() => updateContent(), [state])
 
   useEffect(() => {
     !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
@@ -38,17 +39,24 @@ export default function Home() {
         group={group}
         selectGroup={selectGroup}
         fields={fields}
-        updateJson={(e) => setJson(updateJson(e || fields))}
+        updateJson={(e) => {
+          setJson(updateJson(e || fields))
+        }}
       />
 
       <Fields
         fields={fields}
         setFields={setFields}
-        callback={(e) => setJson(updateJson(e || fields))}
+        group={group}
         groups={groups}
         setGroups={setGroups}
-        group={group}
+        selectGroup={selectGroup}
         updateContent={updateContent}
+        callback={(e) => {
+          setJson(updateJson(e || fields))
+
+          setState(!state)
+        }}
       />
 
       <Result json={json} setJson={setJson} onClick={updateContent} />
