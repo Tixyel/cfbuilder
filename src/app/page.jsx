@@ -49,9 +49,6 @@ export default function Home() {
         setFields={setFields}
         group={group}
         groups={groups}
-        setGroups={setGroups}
-        selectGroup={selectGroup}
-        updateContent={updateContent}
         callback={(e) => {
           setJson(updateJson(e || fields))
 

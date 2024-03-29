@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ChevronsUpDown, SquareMousePointer } from 'lucide-react'
+import { ChevronsUpDown, SquareMousePointer, Trash2 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 
@@ -15,7 +15,7 @@ import DropdownInput from '@/components/inputs/dropdown'
 import FieldKeyInput from '@/components/inputs/fieldKey'
 import { noGroup } from '@/lib/group'
 
-function Block({ className, childrenClassName, children, ...props }) {
+function Block({ className, type = 'group', index, remove, childrenClassName, children, ...props }) {
   return (
     <div
       className={cn(
@@ -24,9 +24,16 @@ function Block({ className, childrenClassName, children, ...props }) {
         className,
       )}
       {...props}>
-      <SortableItem.DragHandle className="grid place-items-center w-14 cursor-move touch-none hover:bg-white/20 rounded-xl mx-1 transition duration-500">
-        <ChevronsUpDown color="#ffffff" size="20px" />
-      </SortableItem.DragHandle>
+      <div className="flex flex-col justify-start items-stretch self-stretch w-2/12 mx-1 gap-2">
+        {type != 'group' && (
+          <div className="grid place-items-center cursor-pointer" onClick={() => remove(index)}>
+            <Trash2 className="hover:stroke-red-500 transition" color="#ffffff" size={20} />
+          </div>
+        )}
+        <SortableItem.DragHandle className="grid flex-1 place-items-center w-full cursor-move touch-none hover:bg-white/20 rounded-xl transition duration-500">
+          <ChevronsUpDown color="#ffffff" size="20px" />
+        </SortableItem.DragHandle>
+      </div>
 
       <div className={cn('flex flex-col items-start justify-start gap-3 w-full', childrenClassName)}>{children}</div>
     </div>
@@ -61,11 +68,11 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
   )
 }
 
-function Field({ fields, className, label, value, index, fieldKey, fieldKeyId, onChange, ...props }) {
+function Field({ fields, className, label, value, index, remove, fieldKey, fieldKeyId, onChange, ...props }) {
   const [type, setType] = useState(props.type)
 
   return (
-    <Block className={cn('hover:border hover:border-[#864FBC]', className)} {...props}>
+    <Block className={cn('hover:border hover:border-[#864FBC]', className)} remove={remove} index={index} {...props}>
       <FieldKeyInput
         className={cn(
           fields.some((item) => item.key == fieldKey && item.id != fieldKeyId) && 'invalid',

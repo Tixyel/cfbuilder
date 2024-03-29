@@ -8,7 +8,7 @@ import { noGroup, newGroup as newGroupName, newGroupObj } from '@/lib/group'
 import { cn, concatJson, reorderGroupsInJson } from '@/lib/utils'
 import AddField from '@/components/editor/addField'
 
-export default function Fields({ fields, setFields, callback, groups, setGroups, selectGroup, group, updateContent }) {
+export default function Fields({ fields, setFields, callback, groups, group }) {
   function onClickAdd(group, field) {
     let newFields = fields.filter((item) => item.group?.id == group || (group == noGroup && !item.group?.id)),
       thisGroup = groups.find(({ id }) => id == group),
@@ -21,16 +21,7 @@ export default function Fields({ fields, setFields, callback, groups, setGroups,
 
     newFields.unshift({ id: field?.key, ...field, group: thisGroup })
 
-    console.log('new groups', newGroups, thisGroup)
-
-    let newJson = concatJson(thisGroup, newGroups, newFields, group == newGroupName ? [...fields, ...newFields] : fields)
-
-    newJson = reorderGroupsInJson(newGroups, newJson)
-
-    callback(newJson)
-    // updateContent(newJson)
-    // setGroups(newGroups)
-    // selectGroup(thisGroup)
+    callback(reorderGroupsInJson(newGroups, concatJson(thisGroup, newGroups, newFields, group == newGroupName ? [...fields, ...newFields] : fields)))
   }
 
   return (
@@ -68,6 +59,21 @@ export default function Fields({ fields, setFields, callback, groups, setGroups,
 
                     setFields(newFields)
                     callback(fields)
+                  }}
+                  remove={(index) => {
+                    console.log(
+                      index,
+                      fields.findIndex(({ id }) => id == index),
+                    )
+                    let newFields = fields
+
+                    newFields.splice(
+                      fields.findIndex(({ id }) => id == index),
+                      1,
+                    )
+
+                    setFields(newFields)
+                    callback(newFields)
                   }}
                   index={id}
                   fieldKey={key}
