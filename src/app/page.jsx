@@ -7,14 +7,15 @@ import Groups from '@/containers/sessions/groups'
 import Fields from '@/containers/sessions/fields'
 import Result from '@/containers/sessions/result'
 
-import { noGroup } from '@/lib/group'
+import { noGroupObj } from '@/lib/group'
 import { jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export default function Home() {
   const [json, setJson] = useState(templateField),
-    [groups, setGroups] = useState(jsonFieldsToGroups(json)),
-    [fields, setFields] = useState(jsonFieldsToFields(json, groups)),
-    [group, selectGroup] = useState(groups[0] || { id: noGroup, name: noGroup })
+    [groups, setGroups] = useState([]),
+    [fields, setFields] = useState([]),
+    [group, selectGroup] = useState(groups[0] || noGroupObj)
 
   function updateContent() {
     setFields(jsonFieldsToFields(json))
@@ -23,6 +24,11 @@ export default function Home() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => updateContent(), [])
+
+  useEffect(() => {
+    !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groups])
 
   return (
     <main className="flex-1 flex flex-row justify-between gap-6 items-start px-24 pb-20 overflow-hidden z-20">
