@@ -18,8 +18,20 @@ export default function Home() {
         return item
       } else return templateField
     }),
-    [groups, setGroups] = useState([]),
-    [fields, setFields] = useState([]),
+    [groups, setGroups] = useState(() => {
+      let item = JSON.parse(localStorage.getItem('groups'))
+
+      if (item) {
+        return item
+      } else return []
+    }),
+    [fields, setFields] = useState(() => {
+      let item = JSON.parse(localStorage.getItem('fields'))
+
+      if (item) {
+        return item
+      } else return []
+    }),
     [group, selectGroup] = useState(groups[0] || noGroupObj),
     [state, setState] = useState(false)
 
@@ -39,9 +51,9 @@ export default function Home() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => updateContent(), [state])
 
-  useEffect(() => {
-    localStorage.setItem('json', JSON.stringify(json, null, 2))
-  }, [json])
+  useEffect(() => localStorage.setItem('json', JSON.stringify(json, null, 2)), [json])
+  useEffect(() => localStorage.setItem('groups', JSON.stringify(groups)), [groups])
+  useEffect(() => localStorage.setItem('fields', JSON.stringify(fields)), [fields])
 
   return (
     <main
