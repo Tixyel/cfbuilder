@@ -20,7 +20,7 @@ function Option({ value }) {
   )
 }
 
-export default function DropdownInput({ options }) {
+export default function DropdownInput({ options = {} }) {
   return (
     <div className="flex w-full flex-col justify-end items-end">
       <div className="w-full max-w-sm flex flex-row justify-end items-center gap-1.5">
@@ -32,7 +32,7 @@ export default function DropdownInput({ options }) {
 
       <p className="text-zinc-400 text-sm mb-1 px-6">Not yet implemented</p>
       <div className="flex flex-col gap-2 w-full">
-        {Object.entries(options)
+        {Object.entries(options || {})
           .reduce((acc, [key, value]) => {
             acc = [...acc, { key, value }]
             return acc
