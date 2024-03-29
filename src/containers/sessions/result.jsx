@@ -1,8 +1,22 @@
 import Monaco from '@/components/editor/monaco'
 import Section from '@/components/editor/section'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 export default function Result({ json, setJson, onClick }) {
+  function copyData() {
+    navigator.clipboard.writeText(
+      JSON.stringify(
+        Object.entries(json).reduce((acc, [key, { value }]) => {
+          if (value != undefined) acc[key] = value
+          return acc
+        }, {}),
+      ),
+    )
+
+    toast('Field data copied successfully')
+  }
+
   return (
     <Section className={'flex-1 h-full gap-4   rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'}>
       <Section.title>
@@ -22,6 +36,11 @@ export default function Result({ json, setJson, onClick }) {
           defaultLanguage="json"
           value={JSON.stringify(json, null, 2)}
         />
+      </div>
+      <div className="flex flex-row w-full justify-end">
+        <Button onClick={copyData} className="hover:border-transparent transition duration-700 border-[#864FBC]" variant="outline">
+          Copy data
+        </Button>
       </div>
     </Section>
   )

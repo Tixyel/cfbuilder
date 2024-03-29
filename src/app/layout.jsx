@@ -4,6 +4,7 @@ import './globals.css'
 import './layout.css'
 
 import { Inter } from 'next/font/google'
+import { Toaster } from '@/components/ui/sonner'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
@@ -41,6 +42,9 @@ export default function RootLayout({ children }) {
         {/* <div className="bacate absolute w-full h-[100%] scale-y-50 scale-x-75 origin-top top-[-30%] bg-[#592e76] rounded-b-full"></div> */}
 
         <Credits />
+        <div className="absolute inset-0">
+          <Toaster position="bottom-left" />
+        </div>
         {children}
       </body>
     </html>
