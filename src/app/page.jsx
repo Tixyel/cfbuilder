@@ -12,24 +12,24 @@ import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/ut
 
 export default function Home() {
   const [json, setJson] = useState(() => {
-      let item = JSON.parse(localStorage.getItem('json'))
+      if (typeof window != 'undefined' || typeof window != undefined) {
+        let item = JSON.parse(localStorage.getItem('json'))
 
-      if (item) {
-        return item
+        if (item) return item
       } else return templateField
     }),
     [groups, setGroups] = useState(() => {
-      let item = JSON.parse(localStorage.getItem('groups'))
+      if (typeof window != 'undefined' || typeof window != undefined) {
+        let item = JSON.parse(localStorage.getItem('groups'))
 
-      if (item) {
-        return item
+        if (item) return item
       } else return []
     }),
     [fields, setFields] = useState(() => {
-      let item = JSON.parse(localStorage.getItem('fields'))
+      if (typeof window != 'undefined' || typeof window != undefined) {
+        let item = JSON.parse(localStorage.getItem('fields'))
 
-      if (item) {
-        return item
+        if (item) return item
       } else return []
     }),
     [group, selectGroup] = useState(groups[0] || noGroupObj),
