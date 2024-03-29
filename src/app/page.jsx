@@ -24,14 +24,13 @@ export default function Home() {
 
   useEffect(() => {
     if (window) {
-      let Json = JSON.parse(localStorage.getItem('json')),
-        Groups = JSON.parse(localStorage.getItem('groups')),
-        Fields = JSON.parse(localStorage.getItem('fields'))
+      let Json = JSON.parse(localStorage.getItem('json'))
 
       Json && Json != null && JSON.stringify(Json) != JSON.stringify(templateField) && setJson(Json)
-      Groups && Array.isArray(Groups) && setGroups(Groups)
-      Fields && setFields(Fields)
+      setState(!state)
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -52,14 +51,6 @@ export default function Home() {
     let item = JSON.stringify(json, null, 2)
     localStorage.setItem('json', item || templateField)
   }, [json])
-  useEffect(() => {
-    let item = JSON.stringify(groups, null, 2)
-    item && localStorage.setItem('groups', item)
-  }, [groups])
-  useEffect(() => {
-    let item = JSON.stringify(fields, null, 2)
-    item && localStorage.setItem('fields', item)
-  }, [fields])
 
   return (
     <main
