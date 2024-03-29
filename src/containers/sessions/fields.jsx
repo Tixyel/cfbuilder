@@ -35,7 +35,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
 
       <ScrollArea className="w-full px-2">
         <SortableList
-          items={fields.filter((item) => item.group?.name == group.name || (group.name == noGroup && !item.group?.name))}
+          items={fields?.filter((item) => item.group?.name == group.name || (group.name == noGroup && !item.group?.name))}
           onChange={(currentFields) => {
             currentFields = concatJson(group, groups, currentFields, fields)
 

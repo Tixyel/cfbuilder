@@ -11,7 +11,7 @@ function SortableOverlay({ children }) {
 
 export default function SortableList({ items, onChange, renderItem }) {
   const [active, setActive] = useState(null),
-    activeItem = useMemo(() => items.find((item) => item.id === active?.id), [active, items]),
+    activeItem = useMemo(() => [...(items || [])].find((item) => item.id === active?.id), [active, items]),
     sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
 
   return (
@@ -34,16 +34,18 @@ export default function SortableList({ items, onChange, renderItem }) {
         setActive(null)
       }}
       onDragCancel={() => setActive(null)}>
-      <SortableContext items={items}>
-        {items.map((item) => (
-          <React.Fragment key={item.id}>
-            {renderItem(
-              item,
-              items.findIndex((i) => i.id == item.id),
-            )}
-          </React.Fragment>
-        ))}
-      </SortableContext>
+      {items && (
+        <SortableContext items={items}>
+          {items.map((item) => (
+            <React.Fragment key={item.id}>
+              {renderItem(
+                item,
+                items.findIndex((i) => i.id == item.id),
+              )}
+            </React.Fragment>
+          ))}
+        </SortableContext>
+      )}
       <SortableOverlay>
         {activeItem
           ? renderItem(

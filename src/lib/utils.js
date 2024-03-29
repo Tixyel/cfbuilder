@@ -8,46 +8,48 @@ export function cn(...inputs) {
 }
 
 export function jsonFieldsToGroups(json) {
-  return Array.from(
-    Object.values(json)
-      .reduce((acc, field) => {
-        typeof field == 'object' && acc.add(field?.group?.name || field?.group || noGroup)
+  if (json)
+    return Array.from(
+      Object.values(json)
+        .reduce((acc, field) => {
+          typeof field == 'object' && acc.add(field?.group?.name || field?.group || noGroup)
 
-        return acc
-      }, new Set())
-      .keys(),
-  ).map((group) => {
-    return {
-      id: group,
-      name: group,
-    }
-  })
+          return acc
+        }, new Set())
+        .keys(),
+    ).map((group) => {
+      return {
+        id: group,
+        name: group,
+      }
+    })
 }
 
 export function jsonFieldsToFields(json, groups = jsonFieldsToGroups(json)) {
-  return Object.entries(json).reduce((acc, [key, field]) => {
-    if (field) {
-      let { type, label, value, group, options, min, max, step } = field
+  if (json && groups)
+    return Object.entries(json).reduce((acc, [key, field]) => {
+      if (field) {
+        let { type, label, value, group, options, min, max, step } = field
 
-      acc = [
-        ...acc,
-        {
-          id: field.key || key,
-          key: field.key || key,
-          type,
-          label,
-          value,
-          options,
-          min,
-          max,
-          step,
-          group: groups.find(({ name }) => name == group || (name == noGroup && !group)),
-        },
-      ]
-    }
+        acc = [
+          ...acc,
+          {
+            id: field.key || key,
+            key: field.key || key,
+            type,
+            label,
+            value,
+            options,
+            min,
+            max,
+            step,
+            group: groups.find(({ name }) => name == group || (name == noGroup && !group)),
+          },
+        ]
+      }
 
-    return acc
-  }, [])
+      return acc
+    }, [])
 }
 
 export function updateJson(fields) {

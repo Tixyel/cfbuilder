@@ -7,32 +7,14 @@ import Groups from '@/containers/sessions/groups'
 import Fields from '@/containers/sessions/fields'
 import Result from '@/containers/sessions/result'
 
-import { noGroupObj } from '@/lib/group'
+import { noGroup, noGroupObj } from '@/lib/group'
 import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
 
 export default function Home() {
-  const [json, setJson] = useState(() => {
-      if (window?.localStorage) {
-        let item = JSON.parse(localStorage.getItem('json'))
-
-        if (item) return item
-      } else return templateField
-    }),
-    [groups, setGroups] = useState(() => {
-      if (window?.localStorage) {
-        let item = JSON.parse(localStorage.getItem('groups'))
-
-        if (item) return item
-      } else return []
-    }),
-    [fields, setFields] = useState(() => {
-      if (window?.localStorage) {
-        let item = JSON.parse(localStorage.getItem('fields'))
-
-        if (item) return item
-      } else return []
-    }),
-    [group, selectGroup] = useState(groups[0] || noGroupObj),
+  const [json, setJson] = useState(templateField),
+    [groups, setGroups] = useState([]),
+    [fields, setFields] = useState([]),
+    [group, selectGroup] = useState(noGroupObj),
     [state, setState] = useState(false)
 
   function updateContent(jSon = json) {
@@ -41,19 +23,45 @@ export default function Home() {
   }
 
   useEffect(() => {
-    let items = JSON.parse(localStorage.getItem('json'))
-    if (Object.values(items).length) setState(!state)
+    if (window) {
+      let Json = JSON.parse(localStorage.getItem('json')),
+        Groups = JSON.parse(localStorage.getItem('groups')),
+        Fields = JSON.parse(localStorage.getItem('fields'))
 
-    !groups.some(({ id }) => id == group.id) && selectGroup(groups[0] || noGroupObj)
+      Json && Json != null && JSON.stringify(Json) != JSON.stringify(templateField) && setJson(Json)
+      Groups && setGroups(Groups)
+      Fields && setFields(Fields)
+
+      let sGroup = Object.values(Json).find((e) => e)?.group
+      selectGroup({ id: sGroup || noGroupObj, name: sGroup || noGroupObj })
+    }
+  }, [])
+
+  useEffect(() => {
+    let items = JSON.parse(localStorage.getItem('json'))
+    if (items && Object.values(items).length) setState(!state)
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => updateContent(), [state])
+  useEffect(() => {
+    updateContent()
 
-  useEffect(() => localStorage.setItem('json', JSON.stringify(json, null, 2)), [json])
-  useEffect(() => localStorage.setItem('groups', JSON.stringify(groups)), [groups])
-  useEffect(() => localStorage.setItem('fields', JSON.stringify(fields)), [fields])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state])
+
+  useEffect(() => {
+    let item = JSON.stringify(json, null, 2)
+    localStorage.setItem('json', item || templateField)
+  }, [json])
+  useEffect(() => {
+    let item = JSON.stringify(groups, null, 2)
+    item && localStorage.setItem('groups', item)
+  }, [groups])
+  useEffect(() => {
+    let item = JSON.stringify(fields, null, 2)
+    item && localStorage.setItem('fields', item)
+  }, [fields])
 
   return (
     <main
