@@ -14,12 +14,16 @@ import { cn } from '@/lib/utils'
 import SortableList from '@/components/sortable/SortableList'
 import SortableItem from '@/components/sortable/SortableItem'
 
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+
 export default function Home() {
   const noGroup = 'ungrouped',
     [json, setJson] = useState({
       '[field 1]': { type: 'colorpicker', label: '', value: '', group: '[Group 1]' },
-      '[field 2]': { type: 'a', label: '', value: '', group: '[Group 1]' },
-      '[field 3]': { type: 'text', label: '', value: '', group: '[Group 1]' },
+      '[field 2]': { type: 'number', label: '', value: '', group: '[Group 1]' },
+      '[field 3]': { type: 'dropdown', label: '', value: '', group: '[Group 1]' },
       '[field 4]': { type: 'text', label: '', value: '', group: '[Group 1]' },
       '[field 5]': { type: 'text', label: '', value: '', group: '[Group 1]' },
       '[field 6]': { type: 'text', label: '', value: '', group: '[Group 1]' },
@@ -154,9 +158,36 @@ export default function Home() {
         <Section.title>
           <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
           <p className="text-zinc-50 text-sm">Add field</p>
-          <div className="grid place-items-center size-10  cursor-pointer" onClick={addField}>
-            <Plus color="#ffffff" size="20px" />
-          </div>
+
+          <Dialog>
+            <DialogTrigger>
+              <div className="grid place-items-center size-10  cursor-pointer">
+                <Plus color="#ffffff" size="20px" />
+              </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add field</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Key
+                  </Label>
+                  <Input id="key" defaultValue="[field 0]" className="col-span-3" />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="username" className="text-right">
+                    Username
+                  </Label>
+                  <Input id="username" defaultValue="@peduarte" className="col-span-3" />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">Save changes</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </Section.title>
 
         <Divider />
@@ -221,6 +252,7 @@ export default function Home() {
             Apply
           </Button>
         </Section.title>
+
         <div className="h-full w-full rounded-xl overflow-hidden">
           <Monaco
             onChange={(e) => setJson(JSON.parse(e))}
