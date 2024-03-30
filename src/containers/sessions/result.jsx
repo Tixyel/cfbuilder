@@ -1,6 +1,7 @@
 import Monaco from '@/components/editor/monaco'
 import Section from '@/components/editor/section'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 export default function Result({ json, setJson, onClick }) {
@@ -19,9 +20,10 @@ export default function Result({ json, setJson, onClick }) {
 
   return (
     <Section
-      className={
-        'flex-1 h-full min-h-min sm:min-h-[50%] sm:w-[90%] gap-4 max-h-screen rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur'
-      }>
+      className={cn(
+        'flex-1 h-full min-h-[50%] sm:w-[90%] gap-4 max-h-screen rounded-xl overflow-hidden p-4 border border-[#864FBC] bg-black/20 backdrop-blur',
+        'lg:min-h-min',
+      )}>
       <Section.title>
         <p className="text-zinc-50 text-base font-bold flex-1 ml-5 w-full">Result</p>
         <p className="text-zinc-50 ml-5 text-xs">{json && Object.keys(json).length} fields</p>
