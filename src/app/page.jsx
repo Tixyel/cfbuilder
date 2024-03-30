@@ -51,8 +51,8 @@ export default function Home() {
   return (
     <main
       className={cn(
-        'flex-1 gap-6 pb-20 overflow-x-hidden z-20 overflow-hidden',
-        'flex justify-between flex-row items-start',
+        'flex flex-1 gap-6 pb-20 overflow-x-hidden z-20 overflow-hidden',
+        'justify-start flex-col items-center overflow-y-scroll',
         'sm:justify-start sm:flex-col sm:items-center sm:overflow-y-scroll',
         'lg:justify-between lg:flex-row lg:items-start lg:overflow-hidden lg:px-24',
       )}>
