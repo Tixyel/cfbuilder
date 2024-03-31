@@ -38,6 +38,7 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
           items={fields?.filter((item) => item.group?.name == group.name || (group.name == noGroup && !item.group?.name))}
           onChange={(currentFields) => {
             currentFields = concatJson(group, groups, currentFields, fields)
+            currentFields = reorderGroupsInJson(groups, currentFields)
 
             setFields(currentFields)
             callback(currentFields)
