@@ -25,7 +25,7 @@ export function Groups({ global, groups, setGroups, group, selectGroup, updateJs
 
       <Divider />
 
-      <ScrollArea className="w-full px-3">
+      <ScrollArea className="w-full px-2 pr-4">
         <SortableList
           items={groups}
           onChange={(groups) => setGroups(groups)}

@@ -29,7 +29,7 @@ export function Fields({ global, fields, setFields, groups, setGroups, group }) 
 
       <Divider />
 
-      <ScrollArea className="w-full px-2">
+      <ScrollArea className="w-full px-2 pr-4">
         <SortableList
           items={global?.listGroupFields(group, global.fields || fields)}
           onChange={(currentFields) => {

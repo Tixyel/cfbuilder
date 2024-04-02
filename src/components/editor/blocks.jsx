@@ -82,7 +82,6 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
 
 function Field({ className, index, global, fields = {}, field, onChange, onRemove, ...props }) {
   const [type, setType] = useState(field.type)
-  const [opts, setOptions] = useState(field.options)
 
   return (
     <Block className={cn('hover:border hover:border-purple', className)} remove={onRemove} index={index} {...props}>
@@ -129,21 +128,22 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
 
       <LabelInput index={index} onChange={(e) => onChange(index, e.target.value, 'label')} value={field.label} />
 
-      <Variable index={index} onChange={(e) => onChange(index, e.target.value, 'value')} type={type} value={field.value} />
+      <Variable index={index} onChange={(e) => onChange(index, e.target.value, 'value')} type={type} value={field.value} options={field.options} />
 
       {type == 'dropdown' && (
         <DropdownInput
           index={index}
-          options={opts}
+          options={field.options}
           onChange={(result) => {
-            let newOptions = Object.values(result).reduce((acc, { key, value }) => {
-              acc[key] = value
+            onChange(
+              index,
+              Object.values(result).reduce((acc, { key, value }) => {
+                acc[key] = value
 
-              return acc
-            }, {})
-
-            setOptions(newOptions)
-            onChange(index, newOptions, 'options')
+                return acc
+              }, {}),
+              'options',
+            )
           }}
         />
       )}

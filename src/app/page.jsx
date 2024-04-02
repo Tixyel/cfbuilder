@@ -13,11 +13,12 @@ import { cn } from '@/lib/utils'
 import { Global } from '@/lib/fieldClasses'
 
 function saveState(json = templateField) {
-  return localStorage.setItem('json', JSON.stringify(json, null, 2))
+  if ([undefined, 'undefined'].some((e) => window != e) && window) return localStorage.setItem('json', JSON.stringify(json, null, 2))
+  else return null
 }
 
 function getState() {
-  if (window) return JSON.parse(localStorage.getItem('json'))
+  if ([undefined, 'undefined'].some((e) => window != e) && window) return JSON.parse(localStorage.getItem('json'))
   else return templateField
 }
 
