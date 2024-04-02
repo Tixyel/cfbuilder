@@ -99,7 +99,8 @@ export default function DropdownInput({ options = {}, onChange = () => {} }) {
 
         return acc
       }, []),
-    [opt, setOpt] = useState(convert(options))
+    [opt, setOpt] = useState(convert(options)),
+    [isOpen, setIsOpen] = useState(false)
 
   useEffect(() => {
     setOpt(convert(options))
@@ -149,7 +150,6 @@ export default function DropdownInput({ options = {}, onChange = () => {} }) {
         </div>
       </div>
 
-      {/* <p className="text-zinc-400 text-sm mb-1 px-6">Not yet implemented</p> */}
       <div className="flex flex-col gap-2 w-full">
         {Object.values(opt).map(({ key, value, id }) => (
           <Option
