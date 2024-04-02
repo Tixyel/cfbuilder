@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { templateField } from '@/lib/template'
 
 import { Groups as GroupsSection } from '@/containers/sessions/groups'
@@ -12,15 +12,13 @@ import { cn } from '@/lib/utils'
 
 import { Global } from '@/lib/fieldClasses'
 
-function saveState(json) {
-  let item = JSON.stringify(json, null, 2)
-  return localStorage.setItem('json', item || templateField)
+function saveState(json = templateField) {
+  return localStorage.setItem('json', JSON.stringify(json, null, 2))
 }
 
 function getState() {
-  if (window) {
-    return JSON.parse(localStorage.getItem('json'))
-  } else return {}
+  if (window) return JSON.parse(localStorage.getItem('json'))
+  else return templateField
 }
 
 export default function Home() {
@@ -31,9 +29,21 @@ export default function Home() {
     [groups, setGroups] = useState([]),
     [group, selectGroup] = useState(noGroupObj)
 
-  useEffect(() => setJson(getState()), [])
+  useMemo(() => {
+    let lastJson = getState()
 
-  useEffect(() => saveState(json), [json])
+    if (lastJson && JSON.stringify(lastJson) != JSON.stringify(json) && Object.values(lastJson).length) {
+      setJson(lastJson)
+      setGlobal(new Global({ json: lastJson, run: setJson }))
+    }
+
+    saveState(json)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (json && Object.values(json).length) saveState(json)
+  }, [json])
 
   useEffect(() => {
     setFields(global.fields)
