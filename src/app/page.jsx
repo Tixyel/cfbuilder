@@ -30,7 +30,7 @@ export default function Home() {
     [groups, setGroups] = useState([]),
     [group, selectGroup] = useState(noGroupObj)
 
-  useMemo(() => {
+  useEffect(() => {
     let lastJson = getState()
 
     if (lastJson && JSON.stringify(lastJson) != JSON.stringify(json) && Object.values(lastJson).length) {
