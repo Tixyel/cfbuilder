@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 
 import { Global } from '@/lib/fieldClasses'
 
-function saveState() {
+function saveState(json) {
   let item = JSON.stringify(json, null, 2)
   return localStorage.setItem('json', item || templateField)
 }
@@ -20,7 +20,7 @@ function saveState() {
 function getState() {
   if (window) {
     return JSON.parse(localStorage.getItem('json'))
-  }
+  } else return {}
 }
 
 export default function Home() {
@@ -30,6 +30,10 @@ export default function Home() {
   const [fields, setFields] = useState([]),
     [groups, setGroups] = useState([]),
     [group, selectGroup] = useState(noGroupObj)
+
+  useEffect(() => setJson(getState()), [])
+
+  useEffect(() => saveState(json), [json])
 
   useEffect(() => {
     setFields(global.fields)
