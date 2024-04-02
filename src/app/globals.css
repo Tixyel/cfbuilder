@@ -4,6 +4,9 @@
 
 @layer base {
   :root {
+    --purple: 270, 45%, 52%;
+    --alarm: 340, 100%, 50%;
+
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 

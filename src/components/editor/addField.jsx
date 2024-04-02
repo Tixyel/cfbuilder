@@ -13,20 +13,22 @@ import FieldTypeInput from '../inputs/fieldType'
 import LabelInput from '../inputs/label'
 import Variable from '../inputs/variables'
 import Divider from '../ui/divider'
-import { newGroup, noGroup } from '@/lib/group'
+import { newGroup, noGroup } from '@/lib/placeholders'
 import FieldKeyInput from '../inputs/fieldKey'
 import { Input } from '../ui/input'
 
-function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) {
+export function GroupType({ className, type, onChange, groups, placeholder = 'Search group...' }) {
   const [open, setOpen] = useState(false)
   const [value, setValue] = useState(type)
 
   return (
-    <InputWithLabel label="group">
+    <InputWithLabel className={className} label="Field group">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between bg-background/20">
-            <span className="w-full text-start">{[...groups, { name: newGroup }].find(({ name }) => name == value) ? value : 'Select group...'}</span>
+            <span className="w-full text-start">
+              {[...groups, { name: newGroup, id: newGroup }].find(({ id }) => id == value.id) ? value.name : 'Select group...'}
+            </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -39,38 +41,40 @@ function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) 
 
                 <CommandItem
                   className="my-1 mx-1"
-                  key="new"
-                  value="new "
+                  key={newGroup}
+                  value={newGroup}
                   onSelect={(currentValue) => {
                     currentValue = newGroup
-                    setValue(currentValue == value ? '' : currentValue)
+                    currentValue != value.id && setValue({ id: newGroup, name: newGroup })
 
-                    onChange(currentValue)
+                    onChange({ id: newGroup, name: newGroup })
 
                     setOpen(false)
                   }}>
-                  <Check className={cn('mr-2 h-4 w-4', value == 'new ' ? 'opacity-100' : 'opacity-0')} />
+                  <Check className={cn('mr-2 h-4 w-4', value.id == newGroup ? 'opacity-100' : 'opacity-0')} />
                   New group
                 </CommandItem>
 
                 <Divider />
 
                 <CommandGroup>
-                  {groups.map(({ id, name }) => (
-                    <CommandItem
-                      key={id}
-                      value={name}
-                      onSelect={(currentValue) => {
-                        setValue(currentValue == value ? '' : currentValue)
+                  {groups.map(({ id, name }) => {
+                    return (
+                      <CommandItem
+                        key={id}
+                        value={{ id, name }}
+                        onSelect={(currentValue) => {
+                          currentValue != value.id && setValue({ id, name })
 
-                        onChange(currentValue)
+                          onChange({ id, name })
 
-                        setOpen(false)
-                      }}>
-                      <Check className={cn('mr-2 h-4 w-4', value == name ? 'opacity-100' : 'opacity-0')} />
-                      {name.toString().replace(noGroup, 'ungrouped')}
-                    </CommandItem>
-                  ))}
+                          setOpen(false)
+                        }}>
+                        <Check className={cn('mr-2 h-4 w-4', value.id == id ? 'opacity-100' : 'opacity-0')} />
+                        {name.toString()}
+                      </CommandItem>
+                    )
+                  })}
                 </CommandGroup>
               </CommandList>
             </ScrollArea>
@@ -81,16 +85,16 @@ function GroupType({ type, onChange, groups, placeholder = 'Search group...' }) 
   )
 }
 
-export default function AddField({ groups, fields, group, onAdd }) {
-  const [groupType, setGroupType] = useState(group.name),
+export default function AddField({ groups, fields = [], group, onAdd }) {
+  const [groupType, setGroupType] = useState(group),
     [fieldKey, setFieldKey] = useState('field'),
     [fieldType, setFieldType] = useState('text'),
     [fieldLabel, setFieldLabel] = useState(''),
     [fieldValue, setFieldValue] = useState('')
 
   useEffect(() => {
-    setGroupType(group.name)
-  }, [group.name])
+    setGroupType(group)
+  }, [group])
 
   return (
     <Dialog>
@@ -112,37 +116,19 @@ export default function AddField({ groups, fields, group, onAdd }) {
           <InputWithLabel label={'Field key'}>
             <Input
               className={cn(
-                fields?.some((item) => item.key == fieldKey || !fieldKey.length) && 'invalid',
-                '[&.invalid]:border-red-500 [&.invalid]:border',
+                Object.values(fields).some((item) => item.key == fieldKey || !fieldKey.length) && 'invalid',
+                '[&.invalid]:animate-invalid',
               )}
               value={fieldKey}
               onChange={(e) => setFieldKey(e.target.value)}
               placeholder="Field key"
             />
           </InputWithLabel>
-
-          {/* <LabelInput value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} placeholder="Field label" /> */}
-          {/* <FieldKeyInput
-            className={cn(fields.some((item) => item.key == fieldKey) && 'invalid', '[&.invalid]:border-red-500 [&.invalid]:border')}
-            value={fieldKey}
-            onChange={(e) => setFieldKey(e.target.value)}
-          /> */}
-
-          {/* <FieldTypeInput
-            value={fieldType}
-            onValueChange={(e) => {
-              setFieldType(e.target.value)
-            }}
-          />
-
-          <LabelInput value={fieldLabel} onChange={(e) => setFieldLabel(e.target.value)} placeholder="Field label" />
-
-          <Variable type={fieldType} value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} /> */}
         </div>
-        <DialogFooter>
+        <DialogFooter className={Object.values(fields).some((item) => item.key == fieldKey || !fieldKey.length) && 'cursor-not-allowed'}>
           <DialogClose asChild>
             <Button
-              disabled={fields?.some((item) => item.key == fieldKey || !fieldKey.length)}
+              disabled={Object.values(fields).some((item) => item.key == fieldKey || !fieldKey.length)}
               variant="outline"
               onClick={() => {
                 onAdd(groupType, { key: fieldKey, type: fieldType, label: fieldLabel, value: fieldValue })

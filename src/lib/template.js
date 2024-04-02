@@ -6,15 +6,16 @@ export const templateField = {
     group: '[Group 1]',
   },
   '[field 2]': {
-    type: 'dropdown',
+    type: 'text',
     label: '',
-    value: 'value1',
-    options: {
-      'value1': 'Value 1',
-      'value2': 'Value 2',
-      'value3': 'Value 3',
-    },
+    value: '',
     group: '[Group 1]',
+  },
+  '[field 7]': {
+    type: 'googleFont',
+    label: '',
+    value: '',
+    group: '[Group 2]',
   },
   '[field 3]': {
     type: 'number',
@@ -40,12 +41,6 @@ export const templateField = {
     value: '',
     group: '[Group 1]',
   },
-  '[field 7]': {
-    type: 'googleFont',
-    label: '',
-    value: '',
-    group: '[Group 2]',
-  },
   '[field 8]': {
     type: 'colorpicker',
     label: '',
@@ -64,6 +59,16 @@ export const templateField = {
     value: '',
   },
   '[field 11]': {
+    type: 'dropdown',
+    label: '',
+    value: 'value1',
+    options: {
+      'value1': 'Value 1',
+      'value2': 'Value 2',
+      'value3': 'Value 3',
+    },
+  },
+  '[field 12]': {
     type: 'text',
     label: '',
     value: '',

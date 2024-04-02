@@ -4,30 +4,26 @@ import SortableItem from '@/components/sortable/SortableItem'
 import SortableList from '@/components/sortable/SortableList'
 import Divider from '@/components/ui/divider'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { noGroup, newGroup as newGroupName, newGroupObj } from '@/lib/group'
-import { cn, concatJson, reorderGroupsInJson } from '@/lib/utils'
+import { noGroup, newGroup } from '@/lib/placeholders'
+import { cn, validFieldToJSON } from '@/lib/utils'
 import AddField from '@/components/editor/addField'
 
-export default function Fields({ fields, setFields, callback, groups, group }) {
-  function onClickAdd(group, field) {
-    let newFields = fields.filter((item) => item.group?.id == group || (group == noGroup && !item.group?.id)),
-      thisGroup = groups.find(({ id }) => id == group),
-      newGroups = groups
+export function Fields({ global, fields, setFields, groups, setGroups, group }) {
+  async function onClickAdd(group, field) {
+    let currentGroup = global.getGroup(group.id) || { id: group?.id || group, name: group?.name || group }
 
-    if (!thisGroup) {
-      thisGroup = newGroupObj
-      newGroups.push(thisGroup)
-    }
+    field.group = !currentGroup ? newGroup : currentGroup.name
+    currentGroup.name == noGroup && (field.group = undefined)
 
-    newFields.unshift({ id: field?.key, ...field, group: thisGroup })
+    field.index = 1000
 
-    callback(reorderGroupsInJson(newGroups, concatJson(thisGroup, newGroups, newFields, group == newGroupName ? [...fields, ...newFields] : fields)))
+    global.addField(field)
   }
 
   return (
     <Section className="h-full flex-[0.5] max-h-screen">
       <Section.title>
-        <p className="text-zinc-50 text-base font-bold flex-1">{group.name}</p>
+        <p className="text-zinc-50 text-base font-bold flex-1">{group?.name}</p>
         <AddField fields={fields} groups={groups} group={group} onAdd={onClickAdd} />
       </Section.title>
 
@@ -35,49 +31,23 @@ export default function Fields({ fields, setFields, callback, groups, group }) {
 
       <ScrollArea className="w-full px-2">
         <SortableList
-          items={fields?.filter((item) => item.group?.name == group.name || (group.name == noGroup && !item.group?.name))}
+          items={global?.listGroupFields(group, global.fields || fields)}
           onChange={(currentFields) => {
-            currentFields = concatJson(group, groups, currentFields, fields)
-            currentFields = reorderGroupsInJson(groups, currentFields)
-
-            setFields(currentFields)
-            callback(currentFields)
+            setFields(currentFields, group)
           }}
           renderItem={(item) => {
-            let { id, key, type, label, value } = item
-
             return (
-              <SortableItem id={id} className={cn('my-3 first:mt-0 last:mb-0')}>
+              <SortableItem id={item.id} className={cn('my-3 first:mt-0 last:mb-0')}>
                 <Field
+                  global={global}
                   fields={fields}
-                  onChange={(e, index) => {
-                    let field = { id: e.target.id, value: e.target.value },
-                      newFields = fields,
-                      value = field.value
+                  index={item.id}
+                  field={item}
+                  onChange={(id, value, where) => {
+                    global.getField(id)[where] = value
 
-                    newFields[fields.findIndex(({ id }) => id == index)][field.id] = value
-
-                    setFields(newFields)
-                    callback(fields)
-                  }}
-                  remove={(id) => {
-                    let newFields = fields,
-                      index = fields.findIndex((item) => item.id == id)
-
-                    if (index != undefined) {
-                      newFields.splice(index, 1)
-
-                      setFields(newFields)
-                      callback(newFields)
-                    }
-                  }}
-                  index={id}
-                  fieldKey={key}
-                  fieldKeyId={id}
-                  type={type}
-                  label={label}
-                  value={value}
-                  options={item.options}></Field>
+                    global.run(validFieldToJSON(global.fields))
+                  }}></Field>
               </SortableItem>
             )
           }}

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { ChevronsUpDown, SquareMousePointer, Trash2 } from 'lucide-react'
+import { ChevronsUpDown, Settings, SquareMousePointer, Trash2 } from 'lucide-react'
 
-import { cn } from '@/lib/utils'
+import { cn, validFieldToJSON } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,23 +13,22 @@ import LabelInput from '@/components/inputs/label'
 import Variable from '@/components/inputs/variables'
 import DropdownInput from '@/components/inputs/dropdown'
 import FieldKeyInput from '@/components/inputs/fieldKey'
-import { noGroup } from '@/lib/group'
+import { noGroup } from '@/lib/placeholders'
 
-function Block({ className, type = 'group', index, remove, childrenClassName, children, ...props }) {
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import InputWithLabel from '../ui/input with label'
+import { GroupType } from './addField'
+
+function Block({ className, index, remove, childrenClassName, children, ...props }) {
   return (
     <div
       className={cn(
-        'flex flex-row h-min justify-center items-strech p-2 pl-0 w-full border transition ease-in-out duration-1000 [&.active]:border-[#864FBC] rounded-xl my-2 first:mt-0 last:mb-0 relative',
+        'flex flex-row h-min justify-center items-strech p-2 pl-0 w-full border transition ease-in-out duration-1000 [&.active]:border-purple rounded-xl my-2 first:mt-0 last:mb-0 relative',
         'bg-black/5 backdrop-blur-sm',
         className,
       )}
       {...props}>
       <div className="flex flex-col justify-start items-stretch self-stretch w-2/12 mx-1 gap-2">
-        {type != 'group' && (
-          <div className="grid place-items-center cursor-pointer" onClick={() => remove(index)}>
-            <Trash2 className="hover:stroke-red-500 transition" color="#ffffff" size={20} />
-          </div>
-        )}
         <SortableItem.DragHandle className="grid flex-1 place-items-center w-full cursor-move touch-none hover:bg-white/20 rounded-xl transition duration-500">
           <ChevronsUpDown color="#ffffff" size="20px" />
         </SortableItem.DragHandle>
@@ -41,13 +40,16 @@ function Block({ className, type = 'group', index, remove, childrenClassName, ch
 }
 
 function Group({ className, index, name, groupKey, onChange, select, ...props }) {
-  const [group, setGroup] = useState(name)
+  const [group, setGroup] = useState(name),
+    [valid, setValid] = useState(true),
+    [interval, setIntervalId] = useState(null)
 
   return (
     <Block
       className={cn(
-        'flex flex-row p-2 pl-0 justify-start items-strech w-full border transition ease-in-out duration-1000 [&.active]:border-[#864FBC] rounded-xl my-2 first:mt-0 last:mb-0',
+        'flex flex-row p-2 pl-0 justify-start items-strech w-full border transition ease-in-out duration-1000 [&.active]:border-purple rounded-xl my-2 first:mt-0 last:mb-0',
         className,
+        valid == false && 'invalid animate-invalid',
       )}
       childrenClassName="flex-row"
       {...props}>
@@ -55,8 +57,18 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
         type="text"
         placeholder="Group title"
         onChange={(e) => {
-          setGroup(e.target.value)
-          onChange(e)
+          let valid = onChange(e.target.value, groupKey)
+
+          if (valid) {
+            setValid(true)
+            setGroup(e.target.value)
+          } else {
+            clearInterval(interval)
+
+            setValid(false)
+
+            setIntervalId(setInterval(() => setValid(true), 1000))
+          }
         }}
         value={group}
         disabled={name == noGroup}
@@ -68,28 +80,73 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
   )
 }
 
-function Field({ fields, className, label, value, index, remove, fieldKey, fieldKeyId, onChange, ...props }) {
-  const [type, setType] = useState(props.type)
+function Field({ className, index, global, fields = {}, field, onChange, onRemove, ...props }) {
+  const [type, setType] = useState(field.type)
+  const [opts, setOptions] = useState(field.options)
 
   return (
-    <Block className={cn('hover:border hover:border-[#864FBC]', className)} remove={remove} index={index} {...props}>
-      <FieldKeyInput
-        className={cn(
-          fields.some((item) => item.key == fieldKey && item.id != fieldKeyId) && 'invalid',
-          '[&.invalid]:border-red-500 [&.invalid]:border',
-        )}
-        index={index}
-        value={fieldKey}
-        onChange={onChange}
-      />
+    <Block className={cn('hover:border hover:border-purple', className)} remove={onRemove} index={index} {...props}>
+      <div className="flex w-full gap-2">
+        <FieldKeyInput
+          className={cn(
+            Object.values(fields).some((item) => item.key == field.key && item.id != field.id) && 'invalid',
+            '[&.invalid]:animate-invalid',
+          )}
+          index={index}
+          value={field.key}
+          onChange={(e) => onChange(index, e.target.value, 'key')}
+        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="grid place-items-center cursor-pointer">
+              <Settings className="hover:stroke-slate-200 transition" color="#fff" size={20} />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-80">
+            <div className="grid gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium leading-none">Settings</h4>
+                <p className="text-sm text-muted-foreground">Manage the field here.</p>
+              </div>
+              <div className="flex flex-col gap-2 w-full">
+                <GroupType
+                  className="flex flex-row w-full justify-between whitespace-nowrap gap-4"
+                  groups={global.groups}
+                  type={global.getGroupByName(field.group)}
+                  onChange={(e) => global.moveField(field.id, e.name)}></GroupType>
+                <InputWithLabel className="flex flex-row w-full justify-between whitespace-nowrap gap-4" label="Delete this field">
+                  <Button variant="outline" className="group px-10" onClick={() => global.removeField(field.id)}>
+                    <Trash2 className="group-hover:stroke-red-500 transition" color="#ffffff" size={20} />
+                  </Button>
+                </InputWithLabel>
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+      </div>
 
-      <FieldTypeInput index={index} onChange={onChange} setType={setType} value={type} />
+      <FieldTypeInput index={index} onChange={(e) => onChange(index, e.target.value, 'type')} setType={setType} value={type} />
 
-      <LabelInput index={index} onChange={onChange} value={label} />
+      <LabelInput index={index} onChange={(e) => onChange(index, e.target.value, 'label')} value={field.label} />
 
-      <Variable index={index} onChange={onChange} type={type} value={value} />
+      <Variable index={index} onChange={(e) => onChange(index, e.target.value, 'value')} type={type} value={field.value} />
 
-      {type == 'dropdown' && <DropdownInput index={index} {...props} />}
+      {type == 'dropdown' && (
+        <DropdownInput
+          index={index}
+          options={opts}
+          onChange={(result) => {
+            let newOptions = Object.values(result).reduce((acc, { key, value }) => {
+              acc[key] = value
+
+              return acc
+            }, {})
+
+            setOptions(newOptions)
+            onChange(index, newOptions, 'options')
+          }}
+        />
+      )}
     </Block>
   )
 }

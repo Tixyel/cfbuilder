@@ -40,9 +40,8 @@ export default function RootLayout({ children }) {
         className={cn(
           poppins.className,
           'w-full flex flex-col justify-center items-stretch min-h-screen h-screen max-h-screen overflow-hidden gap-2',
-          'bg-[#000000]',
+          'bg-black',
         )}>
-        {/* <div className="bacate absolute w-full h-[100%] scale-y-50 scale-x-75 origin-top top-[-30%] bg-[#592e76] rounded-b-full"></div> */}
         <Credits />
         <div className="absolute inset-0">
           <Toaster position="bottom-left" />

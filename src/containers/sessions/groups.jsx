@@ -5,10 +5,10 @@ import SortableList from '@/components/sortable/SortableList'
 import Divider from '@/components/ui/divider'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Plus } from 'lucide-react'
-import { noGroup } from '@/lib/group'
-import { concatJson, reorderGroupsInJson } from '@/lib/utils'
+import { noGroup } from '@/lib/placeholders'
+import { concatJson, reorderGroupsInJson, validFieldToJSON } from '@/lib/utils'
 
-export default function Groups({ groups, setGroups, group, selectGroup, updateJson, fields }) {
+export function Groups({ global, groups, setGroups, group, selectGroup, updateJson, fields }) {
   function select(key) {
     if (key == noGroup) return selectGroup({ id: noGroup, name: noGroup })
     else {
@@ -28,11 +28,7 @@ export default function Groups({ groups, setGroups, group, selectGroup, updateJs
       <ScrollArea className="w-full px-3">
         <SortableList
           items={groups}
-          onChange={(groups) => {
-            setGroups(groups)
-
-            updateJson(reorderGroupsInJson(groups, fields))
-          }}
+          onChange={(groups) => setGroups(groups)}
           renderItem={(item) => {
             let { id, name } = item
 
@@ -41,21 +37,21 @@ export default function Groups({ groups, setGroups, group, selectGroup, updateJs
                 <Group
                   id={id}
                   select={select}
-                  onChange={(e) => {
-                    let group = { id: e.target.parentNode.parentNode.id, name: e.target.value },
-                      newGroups = groups,
-                      currentFields = fields
-                        .filter((item) => item.group.id == group.id || (group.id == noGroup && !item.group.id))
-                        .map((item) => {
-                          item.group.id != noGroup && (item.group.name = group.name)
-                          return item
-                        }),
-                      newJson = concatJson(group, groups, currentFields, fields)
+                  onChange={(value, key) => {
+                    let currentGroup = global.getGroup(key),
+                      currentFields = global.listGroupFields(currentGroup),
+                      newName = value.length ? value : '⁯⁯'
 
-                    newGroups[groups.findIndex(({ id }) => id == group.id)].name = group.name
+                    if (global.groups.some((item) => item.name === newName && item.id != currentGroup.id)) return false
+                    else if (newName.length) {
+                      global.getGroup(key).name = newName
+                      currentFields.map((item) => item.id).forEach((id) => (global.getField(id).group = newName))
 
-                    setGroups(newGroups)
-                    updateJson(reorderGroupsInJson(groups, newJson))
+                      let valid = validFieldToJSON(global.fields)
+                      global.run(valid)
+
+                      return true
+                    } else return false
                   }}
                   groupKey={id}
                   name={name}

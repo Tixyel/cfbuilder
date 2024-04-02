@@ -12,8 +12,9 @@ module.exports = {
       },
     },
     extend: {
-      backgroundImage: { 'body': 'url("/Wallpaper.png")' },
       colors: {
+        purple: 'hsl(var(--purple))',
+        alarm: 'hsl(var(--alarm))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -62,10 +63,14 @@ module.exports = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        'invalid': {
+          '50%': { border: '1px solid hsl(var(--alarm))' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'invalid': 'invalid 1s ease-in-out infinite normal',
       },
       dropShadow: {},
     },

@@ -3,50 +3,66 @@
 import { useEffect, useState } from 'react'
 import { templateField } from '@/lib/template'
 
-import Groups from '@/containers/sessions/groups'
-import Fields from '@/containers/sessions/fields'
-import Result from '@/containers/sessions/result'
+import { Groups as GroupsSection } from '@/containers/sessions/groups'
+import { Fields as FieldsSection } from '@/containers/sessions/fields'
+import { Result as ResultSection } from '@/containers/sessions/result'
 
-import { noGroupObj } from '@/lib/group'
-import { cn, jsonFieldsToFields, jsonFieldsToGroups, updateJson } from '@/lib/utils'
+import { noGroupObj } from '@/lib/placeholders'
+import { cn } from '@/lib/utils'
+
+import { Global } from '@/lib/fieldClasses'
+
+function saveState() {
+  let item = JSON.stringify(json, null, 2)
+  return localStorage.setItem('json', item || templateField)
+}
+
+function getState() {
+  if (window) {
+    return JSON.parse(localStorage.getItem('json'))
+  }
+}
 
 export default function Home() {
   const [json, setJson] = useState(templateField),
+    [global, setGlobal] = useState(new Global({ json: json, run: setJson }))
+
+  const [fields, setFields] = useState([]),
     [groups, setGroups] = useState([]),
-    [fields, setFields] = useState([]),
-    [group, selectGroup] = useState(noGroupObj),
-    [state, setState] = useState(false)
+    [group, selectGroup] = useState(noGroupObj)
 
-  function updateContent(jSon = json) {
-    setFields(jsonFieldsToFields(jSon))
-    setGroups(jsonFieldsToGroups(jSon))
+  useEffect(() => {
+    setFields(global.fields)
+  }, [global.fields])
+
+  useEffect(() => {
+    setGroups(global.groups)
+    global.reorder()
+
+    !global.getGroup(group?.id) && selectGroup(global.groups[0])
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [global.groups])
+
+  const updates = {
+    groups: (newGroups) => {
+      if (global.groups != newGroups) {
+        global.setGroups(newGroups)
+        setGroups(newGroups)
+      }
+    },
+
+    fields: (newFields, currentGroup = group, direct = false) => {
+      if (direct) return setFields(newFields)
+
+      if (global.listGroupFields(currentGroup, fields) != newFields) {
+        let assemble = global.assembleFields(currentGroup, groups, newFields, fields)
+
+        global.setFields(assemble)
+        setFields(assemble)
+      }
+    },
   }
-
-  useEffect(() => {
-    if (window) {
-      let Json = JSON.parse(localStorage.getItem('json'))
-
-      Json && Json != null && JSON.stringify(Json) != JSON.stringify(templateField) && setJson(Json)
-      setState(!state)
-    }
-
-    let items = JSON.parse(localStorage.getItem('json'))
-    if (items && Object.values(items).length) setState(!state)
-
-    selectGroup((groups || [])[0] || noGroupObj)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    updateContent()
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state])
-
-  useEffect(() => {
-    let item = JSON.stringify(json, null, 2)
-    localStorage.setItem('json', item || templateField)
-  }, [json])
 
   return (
     <main
@@ -56,28 +72,11 @@ export default function Home() {
         'sm:justify-start sm:flex-col sm:items-center sm:overflow-y-scroll',
         'lg:justify-between lg:flex-row lg:items-start lg:overflow-hidden lg:px-24',
       )}>
-      <Groups
-        groups={groups}
-        setGroups={setGroups}
-        group={group}
-        selectGroup={selectGroup}
-        fields={fields}
-        updateJson={(e) => {
-          setJson(updateJson(e || fields))
-        }}
-      />
-      <Fields
-        fields={fields}
-        setFields={setFields}
-        group={group}
-        groups={groups}
-        callback={(e) => {
-          setJson(updateJson(e || fields))
+      <GroupsSection global={global} groups={groups} setGroups={updates.groups} group={group} selectGroup={selectGroup} fields={fields} />
 
-          setState(!state)
-        }}
-      />
-      <Result json={json} setJson={setJson} onClick={updateContent} />
+      <FieldsSection global={global} fields={fields} setFields={updates.fields} group={group} groups={groups} setGroups={updates.groups} />
+
+      <ResultSection global={global} json={json} setJson={setJson} onClick={(json) => setGlobal(new Global({ json, run: setJson }))} />
     </main>
   )
 }
