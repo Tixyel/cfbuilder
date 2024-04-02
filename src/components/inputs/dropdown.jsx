@@ -79,7 +79,7 @@ export function Dropdown({ options = {}, index, value: Value, onChange, placehol
                       onChange({ target: { value: key, id: 'value' } }, index)
                       setOpen(false)
                     }}>
-                    <Check className={cn('mr-2 h-4 w-4', value == name ? 'opacity-100' : 'opacity-0')} />
+                    <Check className={cn('mr-2 h-4 w-4', value == key ? 'opacity-100' : 'opacity-0')} />
                     {name}
                   </CommandItem>
                 ))}
