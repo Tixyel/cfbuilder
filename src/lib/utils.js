@@ -1,7 +1,6 @@
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { noGroup } from '@/lib/placeholders'
-import { fieldTypes } from './fieldTypes'
 import { Field, Group } from './fieldClasses'
 
 export function cn(...inputs) {

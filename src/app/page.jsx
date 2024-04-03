@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { templateField } from '@/lib/template'
 
 import { Groups as GroupsSection } from '@/containers/sessions/groups'
@@ -28,7 +28,7 @@ export default function Home() {
 
   const [fields, setFields] = useState([]),
     [groups, setGroups] = useState([]),
-    [group, selectGroup] = useState(noGroupObj)
+    [group, selectGroup] = useState(groups[0] || noGroupObj)
 
   useEffect(() => {
     let lastJson = getState()
@@ -42,13 +42,9 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    if (json && Object.values(json).length) saveState(json)
-  }, [json])
+  useEffect(() => json && Object.values(json).length && saveState(json), [json])
 
-  useEffect(() => {
-    setFields(global.fields)
-  }, [global.fields])
+  useEffect(() => setFields(global.fields), [global.fields])
 
   useEffect(() => {
     setGroups(global.groups)

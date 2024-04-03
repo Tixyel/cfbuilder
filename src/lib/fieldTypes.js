@@ -13,4 +13,7 @@ export const fieldTypes = {
   'video-input': (value) => value,
 }
 
-export const customFieldTypes = ['gradient', 'array', '']
+export const customFieldTypes = {
+  'gradient': (value) => value,
+  'array': (value) => Array.from(value),
+}
