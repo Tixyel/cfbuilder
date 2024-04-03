@@ -38,14 +38,18 @@ export default function InputCounter({ index, value, step = 1, max = Number.MAX_
     },
     save = (value) => onChange({ target: { value, id: 'value' } }, index),
     add = () => {
-      let newValue = balance(parseFloat(val) + parseFloat(step || 1))
-      setVal(newValue)
-      save(newValue)
+      if (status != 'max') {
+        let newValue = parseFloat(val) + parseFloat(step || 1)
+        setVal(newValue)
+        save(newValue)
+      }
     },
     remove = () => {
-      let newValue = balance(parseFloat(val) - parseFloat(step || 1))
-      setVal(newValue)
-      save(newValue)
+      if (status != 'min') {
+        let newValue = parseFloat(val) - parseFloat(step || 1)
+        setVal(newValue)
+        save(newValue)
+      }
     }
 
   return (
@@ -69,7 +73,8 @@ export default function InputCounter({ index, value, step = 1, max = Number.MAX_
         onChange={(e) => {
           let newValue = e.target.value
 
-          newValue = balance(newValue)
+          // newValue = balance(newValue)
+          newValue = parseFloat(e.target.value).toFixed(2)
 
           setVal(newValue)
           save(newValue)

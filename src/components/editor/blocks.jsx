@@ -86,6 +86,14 @@ function Group({ className, index, name, groupKey, onChange, select, ...props })
 function Field({ className, index, global, fields = {}, field, onChange, onRemove, ...props }) {
   const [type, setType] = useState(field.type)
 
+  const balance = (value) => {
+    value = parseFloat(value)
+    // value = Math.round(parseFloat(value.toString().length ? value : 0) / step) * step
+    value = Math.min(Math.max(value, parseFloat(field?.min || Number.MIN_SAFE_INTEGER)), parseFloat(field?.max || Number.MAX_SAFE_INTEGER))
+
+    return value
+  }
+
   return (
     <Block className={cn('hover:border hover:border-purple', className)} remove={onRemove} index={index} {...props}>
       <div className="flex w-full gap-2">
@@ -137,7 +145,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
                             value={field.min || undefined}
                             step={0.1}
                             onChange={(e, index) => {
-                              global.getField(index).min = parseFloat(e.target.value || 0)
+                              global.getField(index).min = balance(parseFloat(e.target.value || 0))
 
                               global.run(validFieldToJSON(global.fields))
                             }}
@@ -159,7 +167,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
                             value={field.max || undefined}
                             step={0.1}
                             onChange={(e, index) => {
-                              global.getField(index).max = parseFloat(e.target.value || 0)
+                              global.getField(index).max = balance(parseFloat(e.target.value || 0))
 
                               global.run(validFieldToJSON(global.fields))
                             }}
@@ -182,7 +190,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
                             min={0.01}
                             step={0.1}
                             onChange={(e, index) => {
-                              global.getField(index).step = parseFloat(e.target.value || 1)
+                              global.getField(index).step = balance(parseFloat(e.target.value || 1))
 
                               global.run(validFieldToJSON(global.fields))
                             }}
