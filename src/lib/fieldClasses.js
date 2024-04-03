@@ -143,7 +143,7 @@ class Global {
       let actualIndex = this.fields.indexOf(field),
         newIndex = this.fields.indexOf(this.listGroupFields(newGroup)[0])
 
-      this.getField(fieldId).group = newGroup
+      this.getField(fieldId).group = newGroup.name == noGroup ? undefined : newGroup.name
 
       this.fields.splice(actualIndex, 1)
       this.fields.splice(newIndex > 0 ? newIndex - 1 : newIndex, 0, field)

@@ -111,7 +111,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
                 <GroupType
                   className="flex flex-row w-full justify-between whitespace-nowrap gap-4"
                   groups={global.groups}
-                  type={global.getGroupByName(field.group)}
+                  type={global.getGroupByName(field?.group?.name || field?.group || noGroup)}
                   onChange={(e) => global.moveField(field.id, e.name)}></GroupType>
                 <InputWithLabel className="flex flex-row w-full justify-between whitespace-nowrap gap-4" label="Delete this field">
                   <Button variant="outline" className="group px-10" onClick={() => global.removeField(field.id)}>

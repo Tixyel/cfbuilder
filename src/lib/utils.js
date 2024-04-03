@@ -30,7 +30,7 @@ export function convertJsonToGroupClass(json) {
 
         return acc
       }, new Set()),
-    ).map((group, index) => new Group({ name: group, index }))
+    ).map((group, index) => new Group({ name: group || noGroup, index }))
   } else return []
 }
 

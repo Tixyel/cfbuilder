@@ -19,7 +19,7 @@ import { Input } from '../ui/input'
 
 export function GroupType({ className, type, onChange, groups, placeholder = 'Search group...' }) {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState(type)
+  const [value, setValue] = useState({ id: type?.id || noGroup, name: type?.name || noGroup })
 
   return (
     <InputWithLabel className={className} label="Field group">
@@ -27,7 +27,7 @@ export function GroupType({ className, type, onChange, groups, placeholder = 'Se
         <PopoverTrigger asChild>
           <Button variant="outline" role="combobox" aria-expanded={open} className="w-full justify-between bg-background/20">
             <span className="w-full text-start">
-              {[...groups, { name: newGroup, id: newGroup }].find(({ id }) => id == value.id) ? value.name : 'Select group...'}
+              {[...groups, { name: newGroup, id: newGroup }].find(({ id }) => id == value?.id) ? value.name : 'Select group...'}
             </span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -51,27 +51,27 @@ export function GroupType({ className, type, onChange, groups, placeholder = 'Se
 
                     setOpen(false)
                   }}>
-                  <Check className={cn('mr-2 h-4 w-4', value.id == newGroup ? 'opacity-100' : 'opacity-0')} />
+                  <Check className={cn('mr-2 h-4 w-4', value?.id == newGroup ? 'opacity-100' : 'opacity-0')} />
                   New group
                 </CommandItem>
 
                 <Divider />
 
                 <CommandGroup>
-                  {groups.map(({ id, name }) => {
+                  {groups.map((group) => {
                     return (
                       <CommandItem
-                        key={id}
-                        value={{ id, name }}
+                        key={group.id}
+                        value={group}
                         onSelect={(currentValue) => {
-                          currentValue != value.id && setValue({ id, name })
+                          currentValue != value.id && setValue(group)
 
-                          onChange({ id, name })
+                          onChange(group)
 
                           setOpen(false)
                         }}>
-                        <Check className={cn('mr-2 h-4 w-4', value.id == id ? 'opacity-100' : 'opacity-0')} />
-                        {name.toString()}
+                        <Check className={cn('mr-2 h-4 w-4', value.id == group.id ? 'opacity-100' : 'opacity-0')} />
+                        {group.name.toString()}
                       </CommandItem>
                     )
                   })}
@@ -92,9 +92,7 @@ export default function AddField({ groups, fields = [], group, onAdd }) {
     [fieldLabel, setFieldLabel] = useState(''),
     [fieldValue, setFieldValue] = useState('')
 
-  useEffect(() => {
-    setGroupType(group)
-  }, [group])
+  useEffect(() => setGroupType(group), [group])
 
   return (
     <Dialog>
