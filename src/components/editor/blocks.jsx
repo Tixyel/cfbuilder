@@ -128,7 +128,14 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
 
       <LabelInput index={index} onChange={(e) => onChange(index, e.target.value, 'label')} value={field.label} />
 
-      <Variable index={index} onChange={(e) => onChange(index, e.target.value, 'value')} type={type} value={field.value} options={field.options} />
+      <Variable
+        index={index}
+        onChange={(e) => onChange(index, e.target.value, 'value')}
+        type={type}
+        value={field.value}
+        options={field.options}
+        field={field}
+      />
 
       {type == 'dropdown' && (
         <DropdownInput

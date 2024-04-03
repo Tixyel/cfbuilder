@@ -1,3 +1,4 @@
+import { fieldTypes } from './fieldTypes'
 import { noGroup } from './placeholders'
 import { convertJsonToGroupClass, convertJsonToFieldClass, validFieldToJSON } from './utils'
 
@@ -9,9 +10,9 @@ class Field {
     this.value = options.value || ''
 
     this.options = options.options || undefined
-    this.step = options.step || undefined
-    this.min = options.min || undefined
-    this.max = options.max || undefined
+    this.step = options.step != undefined ? options.step : undefined
+    this.min = options.min != undefined ? options.min : undefined
+    this.max = options.max != undefined ? options.max : undefined
 
     this.group = options.group || undefined
 
@@ -24,7 +25,7 @@ class Field {
       {
         type: this.type,
         label: this.label,
-        value: this.value,
+        value: fieldTypes[this.type](this.value),
         options: this.options,
         step: this.step,
         min: this.min,

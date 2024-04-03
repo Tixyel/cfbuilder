@@ -27,6 +27,9 @@ export const templateField = {
     type: 'slider',
     label: '',
     value: '',
+    min: 0,
+    max: 20,
+    step: 2.5,
     group: '[Group 1]',
   },
   '[field 5]': {
