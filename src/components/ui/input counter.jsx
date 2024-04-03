@@ -8,8 +8,8 @@ function Button({ className, children, ...props }) {
   return (
     <button
       className={cn(
-        'flex self-stretch px-1 aspect-square items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-        'border border-input bg-background/20 hover:bg-accent hover:text-accent-foreground',
+        'flex self-stretch px-1 aspect-square items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors disabled:pointer-events-none disabled:opacity-50',
+        'border-x border-x-input bg-background/20 hover:bg-accent hover:text-accent-foreground',
         className,
       )}
       {...props}>
@@ -46,14 +46,15 @@ export default function InputCounter({ index, value, step = 1, max = Number.MAX_
     <div
       className={cn(
         'relative flex flex-row w-full items-center justify-stretch transition-all duration-500 rounded-md',
+        'border-input border',
         'focus-within:ring-2 focus-within:ring-slate-800 focus-within:ring-offset-0',
       )}>
-      <Button className={cn('rounded-br-none rounded-tr-none [&.min]:opacity-40 [&.min]:cursor-not-allowed', status)} onClick={remove}>
+      <Button className={cn('rounded-br-none rounded-tr-none border-l-0 [&.min]:opacity-40 [&.min]:cursor-not-allowed', status)} onClick={remove}>
         <Minus color="#fff" size={28} />
       </Button>
       <Input
         type="text"
-        className="rounded-none focus-visible:ring-transparent items-center justify-center text-center border-x-0"
+        className="rounded-none border-none focus-visible:ring-transparent items-center justify-center text-center border-x-0"
         value={val}
         pattern="\d{1,5}"
         step={step}
@@ -67,7 +68,7 @@ export default function InputCounter({ index, value, step = 1, max = Number.MAX_
         }}
       />
       {/* <input type="text" placeholder="999" /> */}
-      <Button className={cn('rounded-bl-none rounded-tl-none [&.max]:opacity-40 [&.max]:cursor-not-allowed', status)} onClick={add}>
+      <Button className={cn('rounded-bl-none rounded-tl-none border-r-0 [&.max]:opacity-40 [&.max]:cursor-not-allowed', status)} onClick={add}>
         <Plus color="#fff" size={28} />
       </Button>
     </div>
