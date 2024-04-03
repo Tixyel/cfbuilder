@@ -18,6 +18,9 @@ import { noGroup } from '@/lib/placeholders'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import InputWithLabel from '../ui/input with label'
 import { GroupType } from './addField'
+import InputCounter from '../ui/input counter'
+import Divider from '../ui/divider'
+import { Checkbox } from '../ui/checkbox'
 
 function Block({ className, index, remove, childrenClassName, children, ...props }) {
   return (
@@ -87,10 +90,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
     <Block className={cn('hover:border hover:border-purple', className)} remove={onRemove} index={index} {...props}>
       <div className="flex w-full gap-2">
         <FieldKeyInput
-          className={cn(
-            Object.values(fields).some((item) => item.key == field.key && item.id != field.id) && 'invalid',
-            '[&.invalid]:animate-invalid',
-          )}
+          className={cn(Object.values(fields).some((item) => item.key == field.key && item.id != field.id) && 'invalid', '[&.invalid]:animate-invalid')}
           index={index}
           value={field.key}
           onChange={(e) => onChange(index, e.target.value, 'key')}
@@ -101,7 +101,7 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
               <Settings className="hover:stroke-slate-200 transition" color="#fff" size={20} />
             </div>
           </PopoverTrigger>
-          <PopoverContent className="w-80">
+          <PopoverContent className="w-96">
             <div className="grid gap-4">
               <div className="space-y-2">
                 <h4 className="font-medium leading-none">Settings</h4>
@@ -118,6 +118,80 @@ function Field({ className, index, global, fields = {}, field, onChange, onRemov
                     <Trash2 className="group-hover:stroke-red-500 transition" color="#ffffff" size={20} />
                   </Button>
                 </InputWithLabel>
+                {['number', 'slider'].some((e) => e == type) && (
+                  <>
+                    <Divider />
+                    <div className="w-full flex flex-row flex-wrap items-center justify-center gap-3">
+                      <InputWithLabel label="min" className="flex-1" labelClassName="px-5">
+                        <div className="flex flex-row justify-center items-center gap-2">
+                          <Checkbox
+                            checked={field.min != undefined}
+                            onCheckedChange={(check) => {
+                              global.getField(index).min = check ? 0 : undefined
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                          <InputCounter
+                            index={index}
+                            value={field.min || undefined}
+                            step={0.1}
+                            onChange={(e, index) => {
+                              global.getField(index).min = parseFloat(e.target.value || 0)
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                        </div>
+                      </InputWithLabel>
+                      <InputWithLabel label="max" className="flex-1" labelClassName="px-5">
+                        <div className="flex flex-row justify-center items-center gap-2">
+                          <Checkbox
+                            checked={field.max != undefined}
+                            onCheckedChange={(check) => {
+                              global.getField(index).max = check ? 10 : undefined
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                          <InputCounter
+                            index={index}
+                            value={field.max || undefined}
+                            step={0.1}
+                            onChange={(e, index) => {
+                              global.getField(index).max = parseFloat(e.target.value || 0)
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                        </div>
+                      </InputWithLabel>
+                      <InputWithLabel label="step" labelClassName="px-5">
+                        <div className="flex flex-row justify-center items-center gap-2">
+                          <Checkbox
+                            checked={field.step != undefined}
+                            onCheckedChange={(check) => {
+                              global.getField(index).step = check ? 1 : undefined
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                          <InputCounter
+                            index={index}
+                            value={field.step || 1}
+                            min={0.01}
+                            step={0.1}
+                            onChange={(e, index) => {
+                              global.getField(index).step = parseFloat(e.target.value || 1)
+
+                              global.run(validFieldToJSON(global.fields))
+                            }}
+                          />
+                        </div>
+                      </InputWithLabel>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </PopoverContent>
