@@ -25,7 +25,7 @@ class Field {
       {
         type: this.type,
         label: this.label,
-        value: fieldTypes[this.type](this.value),
+        value: fieldTypes[this?.type] ? fieldTypes[this.type](this.value) : this.value,
         options: this.options,
         step: this.step,
         min: this.min,
